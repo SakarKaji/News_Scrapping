@@ -1,0 +1,20 @@
+class Standard_Category():
+    BUSINESS = "business"
+    SPORTS = "sports"
+    LIFESTYLE = "lifestyle"
+    ENTERTAINMENT = "entertainment"
+    SCIENCE_AND_TECHNOLOGY = "science and technology"
+    POLITICS = "politics"
+    INTERNATIONAL = "international" # international/world
+    TRAVEL = "travel"
+    FASHION = "fashion"
+    EDUCATION = "education"
+    FINANCE = "finance"
+    ART = "art"
+    ECONOMY = "economy"
+    OPINION = "opinion/thoughts"
+    SOCIETY = "society"
+    HEALTH = "health"
+    WEATHER = "weather"
+    OTHERS = "others"
+ 

@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  worker:
+    build: ./project
+    command: celery -A tasks.tasks worker --pool=solo --loglevel=info --logfile=logs/celery.log
+    volumes:
+      - ./project:/usr/src/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+  
+  beat:
+    build: ./project
+    command: celery -A tasks.tasks beat --loglevel=info --logfile=logs/beat.log
+    volumes:
+      - ./project:/usr/src/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7

@@ -22,7 +22,13 @@ content_url = 'http://3.144.127.185/api/v1/bot/content'
 def postnews(content:json=None):
     try:
         res = requests.post(content_url,json=content)
-        print(res)
+        print(res,end='')
+        print(content['source_name'])
+        # if res.status_code != 400:
+        #     print(res, end=' ')
+        #     print(content['url'])
+        #     if res.status_code == 422:
+        #         print(res.content)
     except Exception as e:
         print(e)
 

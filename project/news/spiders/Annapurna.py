@@ -8,7 +8,6 @@ from Utils import PostNews
 class AnnapurnaScraper(scrapy.Spider):
     name = "Annapurna"
     install_reactor("twisted.internet.asyncioreactor.AsyncioSelectorReactor")
-
     def __init__(self):
         self.articles_xpath = '//div[@class="category__news"]/div[@class="custom-container"]/div[@class="category__news-grid"]'
         self.article_xpath = './/div[@class="grid__card"]'
@@ -49,15 +48,12 @@ class AnnapurnaScraper(scrapy.Spider):
                 continue
 
     def parse(self, response):
-        print(f"Parsing Response on category {response.meta['category']}:")
-        # print(response)
         acticles = response.xpath(self.articles_xpath)
         for article in acticles.xpath(self.article_xpath):
             image_link = article.xpath(self.image_xpath).get().strip()
             title = article.xpath(self.title_xpath).get().strip()
             get_link = article.xpath(self.article_link_xpath).get()
             link = f"https://www.annapurnapost.com{get_link}"
-
             yield scrapy.Request(url=link, callback=self.parse_article, meta={'title': title, 'link': link, 'img_link': image_link, 'category': response.meta['category']})
             
 
@@ -89,6 +85,4 @@ class AnnapurnaScraper(scrapy.Spider):
             }
 
         PostNews.postnews(news)
-
-    def closed(self, reason):
-        print("Closing")
+        print(f"---------------category_name: {category},---------------------")

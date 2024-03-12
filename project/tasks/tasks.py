@@ -8,7 +8,7 @@ from scrapy import settings
 from twisted.internet import reactor
 from billiard import Process
 from scrapy.utils.project import get_project_settings
-from news.spiders import Annapurna,HimalayanTimes,Nagarik
+from news.spiders import Annapurna,gorkhapatra,Nagarik, Myrepublica, eKantipur, kathmanduPost, EverestHeadlines,Ratopati,Onlinekhabar,RatopatiEnglish
 from celery import Celery
 from celery.schedules import crontab
 from celery.utils.log import get_task_logger
@@ -20,15 +20,24 @@ app.config_from_object('celeryconfig')
 app.conf.beat_schedule = {
     "task-run_scrapper": {
         "task": "run_scrapper",
-        "schedule": crontab(minute="*/5"),
+        "schedule": crontab(minute="*"),
     },
 }
 
 spiders = [
-        Annapurna.AnnapurnaScraper,
-        # HimalayanTimes.HimalayanScraper,
-        # Nagarik.NagarikScraper
+     
+         Annapurna.AnnapurnaScraper,
+         Myrepublica.Myrepublica_Scrapper,
+         eKantipur.EKantipur_Scrapper,
+         Nagarik.NagarikScraper,
+         kathmanduPost.KathmanduPost_Scrapper,
+         EverestHeadlines.EverestHeadlineScrapper,
+         Ratopati.Ratopati_scrapper,
+         Onlinekhabar.OnlineKhabarScrapper,
+         gorkhapatra.GorkhaPatraOnlineScrapper,
+         RatopatiEnglish.EnglishRatopatiScrapper
         ]
+        # HimalayanTimes.HimalayanScraper, ip blocked 
 
 logger = get_task_logger(__name__)
 loggers = logging.getLogger('celery.worker')

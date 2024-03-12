@@ -18,8 +18,8 @@ app = Celery('tasks', broker='redis://localhost:6379')
 app.config_from_object('celeryconfig')
 
 app.conf.beat_schedule = {
-    "task-news_scrapper": {
-        "task": "news_scrapper",
+    "task-news_scrapper-1": {
+        "task": "news_scrapper-1",
         "schedule": crontab(minute="*"),
     },
 }
@@ -65,6 +65,6 @@ def run_spider(url = ""):
         crawler.start()
         crawler.join()
 
-@app.task(name='news_scrapper')
+@app.task(name='news_scrapper-1')
 def crawl():
     return run_spider()

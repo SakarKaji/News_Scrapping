@@ -17,7 +17,7 @@ from Utils import Utils
 
 # db = SessionLocal()
 
-content_url = 'http://3.144.127.185/api/v1/bot/content'
+content_url = 'http://127.0.0.1:8000/api/v1/bot/content'
 
 def postnews(content:json=None):
     try:

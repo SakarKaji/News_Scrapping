@@ -16,7 +16,6 @@ class NagarikScraper(scrapy.Spider):
         self.desc_xpath='//article/p/text()'
         self.img_xpath='//div[@class="image mt-2 mx-3"]/img[@class="w-100"]'
 
-
         self.categories = {
             Standard_Category.POLITICS: r'https://nagariknews.nagariknetwork.com/politics',
             Standard_Category.SOCIETY: r'https://nagariknews.nagariknetwork.com/social-affairs',
@@ -44,23 +43,16 @@ class NagarikScraper(scrapy.Spider):
 
 
     def parse(self, response):
-        articles=response.xpath(self.article_xpath1)
-        if len(articles)!=0:
-            for article in articles:
-                title=article.xpath(self.title_xpath).get()
-                get_link=article.xpath(self.link_xpath).attrib['href']
-                link=f"https://nagariknews.nagariknetwork.com{get_link}"
-                yield scrapy.Request(url=link, callback=self.parse_article,meta={'title':title,'link':link,'category':response.meta["category"]})
-        else:
-            length=0
-            for article in response.xpath(self.article_xpath2):
-                title=article.xpath(self.title_xpath).get().strip()
-                get_link=article.xpath(self.link_xpath).attrib['href']
-                link=f"https://nagariknews.nagariknetwork.com{get_link}"
-                yield scrapy.Request(url=link, callback=self.parse_article,meta={'title':title,'link':link,'category':response.meta["category"]})
-                length = length+1
-                if length==5:
-                    break
+        article1 = response.xpath(self.article_xpath1) 
+        article2 = response.xpath(self.article_xpath2)
+        articles = article1 + article2
+
+        for article in articles:
+            title=article.xpath(self.title_xpath).get().strip()
+            get_link=article.xpath(self.link_xpath).attrib['href']
+            link=f"https://nagariknews.nagariknetwork.com{get_link}"
+            yield scrapy.Request(url=link, callback=self.parse_article,meta={'title':title,'link':link,'category':response.meta["category"]})
+            
 
     def parse_article(self, response):
         category=response.meta['category']
@@ -82,10 +74,5 @@ class NagarikScraper(scrapy.Spider):
                 'is_recent':True,
                 'source_name':'nagariknews' 
                 }
-        PostNews.postnews(news)
         print(f"---------------category_name: {category},---------------------")
-
-        
-
-
-
+        postnews.postnews(news)

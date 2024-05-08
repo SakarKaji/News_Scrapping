@@ -11,8 +11,6 @@ from scrapy.utils.project import get_project_settings
 from news.spiders import Annapurna,gorkhapatra,Nagarik, Myrepublica, eKantipur, kathmanduPost, EverestHeadlines,Ratopati,Onlinekhabar,RatopatiEnglish
 from celery import Celery
 from celery.schedules import crontab
-from celery.utils.log import get_task_logger
-import logging
 
 app = Celery('tasks', broker='redis://localhost:6379')
 app.config_from_object('celeryconfig')
@@ -25,7 +23,6 @@ app.conf.beat_schedule = {
 }
 
 spiders = [
-     
          Annapurna.AnnapurnaScraper,
          Myrepublica.Myrepublica_Scrapper,
          eKantipur.EKantipur_Scrapper,
@@ -38,11 +35,6 @@ spiders = [
          RatopatiEnglish.EnglishRatopatiScrapper
         ]
         # HimalayanTimes.HimalayanScraper, ip blocked 
-
-logger = get_task_logger(__name__)
-loggers = logging.getLogger('celery.worker')
-loggers.setLevel(logging.INFO)
-logger = logging.getLogger('scrapy').setLevel(logging.WARNING)
 
 class UrlCrawlerScript(Process):
         def __init__(self, spider):

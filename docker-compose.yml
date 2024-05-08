@@ -3,7 +3,7 @@ version: '3.8'
 services:
   worker:
     build: ./project
-    command: celery -A tasks.tasks worker --pool=solo --loglevel=info --logfile=logs/celery.log
+    command: celery -A tasks.tasks worker --pool=solo -l info
     volumes:
       - ./project:/usr/src/app
     environment:
@@ -14,7 +14,7 @@ services:
   
   beat:
     build: ./project
-    command: celery -A tasks.tasks beat --loglevel=info --logfile=logs/beat.log
+    command: celery -A tasks.tasks beat -l info
     volumes:
       - ./project:/usr/src/app
     environment:

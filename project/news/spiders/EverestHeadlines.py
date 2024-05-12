@@ -7,7 +7,7 @@ from Utils import PostNews
 
 
 class EverestHeadlineScrapper(scrapy.Spider):
-    name = "Annapurna"
+    name = "EverestHeadline"
 
     def __init__(self):
         self.articles_xpath = "//div/div[1]/div[1]/div[2]/li//h5/a/@href"

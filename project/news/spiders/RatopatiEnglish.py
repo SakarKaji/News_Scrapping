@@ -6,7 +6,7 @@ from Utils import PostNews
 
 class EnglishRatopatiScrapper(scrapy.Spider):
 
-    name = "Ratopati"
+    name = "Ratopati English"
 
     def __init__(self):
         self.articles_xpath = "//h3[@class]/a/@href"

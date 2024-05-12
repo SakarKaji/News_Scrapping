@@ -18,7 +18,7 @@ app.config_from_object('celeryconfig')
 app.conf.beat_schedule = {
     "task-news_scrapper-1": {
         "task": "news_scrapper-1",
-        "schedule": crontab(minute="*"),
+        "schedule": crontab(hour="*"),
     },
 }
 

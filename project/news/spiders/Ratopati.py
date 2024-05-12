@@ -4,7 +4,7 @@ from Utils import PostNews
 from Utils.Constants import Standard_Category
 
 class Ratopati_scrapper(scrapy.Spider):
-    name = "Ratopati"
+    name = "Ratopati Nepali"
 
     def __init__(self, name: str | None = None, **kwargs: any):
         super().__init__(name, **kwargs)

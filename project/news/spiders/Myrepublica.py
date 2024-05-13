@@ -45,7 +45,7 @@ class Myrepublica_Scrapper(scrapy.Spider):
         for link, date in zip(links,dates):
             link = full_link + link
             date = Utils.republica_conversion(date)
-            if date != self.today_date:
+            if date != self.today_date: 
                 break
             next_page = response.xpath(self.next_page_xpath).extract_first()
             if next_page:

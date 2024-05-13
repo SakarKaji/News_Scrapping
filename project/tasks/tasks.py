@@ -18,21 +18,21 @@ app.config_from_object('celeryconfig')
 app.conf.beat_schedule = {
     "task-news_scrapper-1": {
         "task": "news_scrapper-1",
-        "schedule": crontab(hour="*"),
+        "schedule": crontab(minute="*"),
     },
 }
 
 spiders = [
-         Annapurna.AnnapurnaScraper,
-         Myrepublica.Myrepublica_Scrapper,
-         eKantipur.EKantipur_Scrapper,
-         Nagarik.NagarikScraper,
-         kathmanduPost.KathmanduPost_Scrapper,
-         EverestHeadlines.EverestHeadlineScrapper,
-         Ratopati.Ratopati_scrapper,
-         Onlinekhabar.OnlineKhabarScrapper,
-         gorkhapatra.GorkhaPatraOnlineScrapper,
-         RatopatiEnglish.EnglishRatopatiScrapper
+        #  Annapurna.AnnapurnaScraper,
+        #  Myrepublica.Myrepublica_Scrapper,
+        #  eKantipur.EKantipur_Scrapper,
+        Nagarik.NagarikScraper,
+        #  kathmanduPost.KathmanduPost_Scrapper,
+        #  EverestHeadlines.EverestHeadlineScrapper,
+        #  Ratopati.Ratopati_scrapper,
+        #  Onlinekhabar.OnlineKhabarScrapper,
+        #  gorkhapatra.GorkhaPatraOnlineScrapper,
+        #  RatopatiEnglish.EnglishRatopatiScrapper
         ]
         # HimalayanTimes.HimalayanScraper, ip blocked 
 

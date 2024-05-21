@@ -8,6 +8,7 @@ from Utils import PostNews
 
 class EverestHeadlineScrapper(scrapy.Spider):
     name = "EverestHeadline"
+    # start_urls = ["https://www.everestheadlines.com/"]
 
     def __init__(self):
         self.articles_xpath = "//div/div[1]/div[1]/div[2]/li//h5/a/@href"
@@ -23,6 +24,7 @@ class EverestHeadlineScrapper(scrapy.Spider):
             Standard_Category.TRAVEL: r"https://www.everestheadlines.com/category/tourism",
             Standard_Category.BUSINESS: r"https://www.everestheadlines.com/category/business",
             Standard_Category.INTERNATIONAL: r"https://www.everestheadlines.com/category/international",
+            Standard_Category.OTHERS : r"https://www.everestheadlines.com/category/news",
         }
 
 
@@ -36,24 +38,20 @@ class EverestHeadlineScrapper(scrapy.Spider):
 
     def parse(self, response):
         links = response.xpath(self.articles_xpath).getall()
-        count = 5
-        if(count>0):
-            for link in links:
-                count -= 1
-                yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
-
+        for link in links:
+            yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
 
     def parse_article(self, response):
         url = response.url
         category = response.meta['category']
-        title = response.xpath(self.title_xpath).get()        
+        header = response.xpath(self.title_xpath).get()
+        title = header.strip()     
         img_src = response.xpath(self.image_xpath).get()
         descriptions = response.xpath(self.description_xpath).getall()
         desc = ''.join(descriptions)
         content = Utils.word_60(desc)
         date = response.xpath(self.date_xpath).get()
         formattedDate = Utils.everestHeadlines_conversion(date)
-
         news = {
             'title':title,
             'content_description':content,

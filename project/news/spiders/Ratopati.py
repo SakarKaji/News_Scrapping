@@ -26,8 +26,6 @@ class Ratopati_scrapper(scrapy.Spider):
         for link in  response.xpath(self.navPath):
             category = link.xpath(".//a/text()").get()
             category_link = link.xpath(".//a/@href").get()
-            print(category_link)
-            print(category)
             if category and category_link != None:
                 yield scrapy.Request(url=category_link,  callback=self.scrape_each_category, meta={"category": category})
 

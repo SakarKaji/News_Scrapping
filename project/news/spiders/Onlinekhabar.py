@@ -7,7 +7,8 @@ class OnlineKhabarScrapper(scrapy.Spider):
     name = "Onlinekhabar"
 
     def __init__(self):
-        self.articles_xpath = '//div[@class="ok-news-post ok-post-ltr"]/a/@href'
+        # self.articles_xpath = '//div[@class="ok-news-post ok-post-ltr"]/a/@href'
+        self.articles_xpath = "//div[@id='content']//a/@href"
         self.description_xpath = "//div[@class='ok18-single-post-content-wrap']/p/text()"
         self.title_xpath = "//h1[@class='entry-title']/text()"
         self.title_xpath2 = "//section/div/div[1]/h2/text()"
@@ -20,7 +21,8 @@ class OnlineKhabarScrapper(scrapy.Spider):
             Standard_Category.BUSINESS: r"https://www.onlinekhabar.com/business",
             Standard_Category.OPINION: r"https://www.onlinekhabar.com/opinion",
             Standard_Category.ENTERTAINMENT: r"https://www.onlinekhabar.com/entertainment",
-            Standard_Category.LIFESTYLE: r"https://www.onlinekhabar.com/lifestyle"
+            Standard_Category.LIFESTYLE: r"https://www.onlinekhabar.com/lifestyle",
+            Standard_Category.OTHERS : r"https://www.onlinekhabar.com/content/news/rastiya",
         }
 
     def start_requests(self):
@@ -32,16 +34,13 @@ class OnlineKhabarScrapper(scrapy.Spider):
                 continue
 
     def parse(self, response):
-        print(response.url)
         links = response.xpath(self.articles_xpath).getall()
         for link in links:
             yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
 
 
     def parse_article(self, response):
-        print('----------------------------')
         url = response.url
-        print(url)
         category = response.meta['category']
         title = response.xpath(self.title_xpath).get()
         if(title == None):
@@ -65,4 +64,4 @@ class OnlineKhabarScrapper(scrapy.Spider):
             'source_name':'onlinekhabar'
             }
         PostNews.postnews(news)
-        print(f"---------------category_name: {category},---------------------")
+        print('----------------------------------------------------------------------------------------------------------------------------------')

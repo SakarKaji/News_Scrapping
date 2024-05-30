@@ -75,7 +75,6 @@ class EKantipur_Scrapper(scrapy.Spider):
             "शिक्षा": Standard_Category.EDUCATION,
         }
         category_name = category_mapping[category]
-        print(category_name)
 
         news_dict = {
             "title": title,
@@ -88,5 +87,3 @@ class EKantipur_Scrapper(scrapy.Spider):
             'source_name':'ekantipur'
         }
         PostNews.postnews(news_dict)
-       
-

@@ -1,4 +1,4 @@
-import re
+import re,os
 from io import StringIO
 from html.parser import HTMLParser
 import html
@@ -75,8 +75,16 @@ def word_60(data:str=None):
     text = html.unescape(text)
     return text
 
+def validate_date(date):
+    try:
+        if not date:
+            return False
+        datetime.strptime(date, '%Y-%m-%d')
+        return True
+    except ValueError:
+        return False
+
 def annapurnapost_datetime(ndate):
-   
 
     date_string = ndate
     date_parts = date_string.split(" ")
@@ -215,3 +223,9 @@ def RatopatiEnglish_conversion(date):
     input_date = datetime.strptime(formatted_date, "%B %d, %Y")
     output_date_string = input_date.strftime("%Y-%m-%d")
     return output_date_string
+
+def get_report_file_path():
+    return os.path.join(os.getcwd(),'output',f'Status-Report-{datetime.today().now().date()}.csv')
+
+def delete_report_file():
+    os.remove(os.path.join(os.getcwd(), 'output', f'Status-Report-{datetime.today().now().date()}.csv'))

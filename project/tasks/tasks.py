@@ -24,10 +24,10 @@ app.conf.beat_schedule = {
 
 spiders = [
         #  Annapurna.AnnapurnaScraper,
-        #  Myrepublica.Myrepublica_Scrapper,
+        Myrepublica.Myrepublica_Scrapper,
         #  eKantipur.EKantipur_Scrapper,
         # Nagarik.NagarikScraper,
-        kathmanduPost.KathmanduPost_Scrapper,
+        # kathmanduPost.KathmanduPost_Scrapper,
         #  EverestHeadlines.EverestHeadlineScrapper,
         #  Ratopati.Ratopati_scrapper,
         #  Onlinekhabar.OnlineKhabarScrapper,

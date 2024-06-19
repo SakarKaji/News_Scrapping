@@ -3,6 +3,8 @@ from Utils import Utils
 from Utils import PostNews
 from Utils.Constants import Standard_Category
 from datetime import datetime
+from news.article_object import article_data
+
 
 class EKantipur_Scrapper(scrapy.Spider):
     name = "ekantipur"
@@ -12,11 +14,11 @@ class EKantipur_Scrapper(scrapy.Spider):
         super().__init__(name, **kwargs)
         self.data = []
         self.navPath = '//ul/li[@class="nav-item "]'
-        self.article_title = "//div[@class='article-header']/h1/text()"
+        self.title_xpath = "//div[@class='article-header']/h1/text()"
         self.article_date = "//div[@class='time-author']/time/text()"
-        self.article_content = "//div[contains(@class,'description')]//p/text()"
-        self.article_link = "//article[@class='normal']/div[@class='teaser offset']/h2/a/@href"
-        self.image_path = "//div[@class='description current-news-block']/div[@class='image']/figure/img/@data-src"
+        self.description_xpath = "//div[contains(@class,'description')]//p/text()"
+        self.link_xpath = "//article[@class='normal']/div[@class='teaser offset']/h2/a/@href"
+        self.image_xpath = "//div[@class='description current-news-block']/div[@class='image']/figure/img/@data-src"
         self.today_date = datetime.today().strftime('%Y-%m-%d')
 
     def parse(self, response):
@@ -41,7 +43,7 @@ class EKantipur_Scrapper(scrapy.Spider):
                         yield scrapy.Request( url=each_link, callback=self.scrape_each_article, meta={"link": each_link, "category": category})
                     yield scrapy.Request( url=link, callback=self.scrape_each_article, meta={"link": link, "category": category})
 
-        links = response.xpath(self.article_link).extract()
+        links = response.xpath(self.link_xpath).extract()
         for link in links:
             list = link.split('/')
             date_list = list[2:5]
@@ -52,13 +54,6 @@ class EKantipur_Scrapper(scrapy.Spider):
 
     def scrape_each_article(self, response):
         category = response.meta["category"]
-        title = response.xpath(self.article_title).extract_first()
-        article_content = response.xpath(self.article_content).getall()
-        content = ''.join(article_content)
-        description = Utils.word_60(content)
-        date = response.xpath(self.article_date).get()
-        publishedDate = Utils.ekantipur_conversion(date)
-        image = response.xpath(self.image_path).extract_first()
         category_mapping = {
             "समाचार": Standard_Category.OTHERS,
             "अर्थ / वाणिज्य": Standard_Category.FINANCE,
@@ -75,15 +70,7 @@ class EKantipur_Scrapper(scrapy.Spider):
             "शिक्षा": Standard_Category.EDUCATION,
         }
         category_name = category_mapping[category]
-
-        news_dict = {
-            "title": title,
-            "content_description": description,
-            "image_url": image,
-            "url": response.meta["link"],
-            "published_date": publishedDate,
-            "category_name": category_name,
-            'is_recent':True,
-            'source_name':'ekantipur'
-        }
+        response.meta["category"] = category_name
+        news_dict = article_data(self,response,"ekantipur")
+        print(f"News object :: {news_dict}")
         PostNews.postnews(news_dict)

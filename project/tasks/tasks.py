@@ -8,9 +8,20 @@ from scrapy import settings
 from twisted.internet import reactor
 from billiard import Process
 from scrapy.utils.project import get_project_settings
-from news.spiders import Annapurna,gorkhapatra,Nagarik, Myrepublica, eKantipur, kathmanduPost, EverestHeadlines,Ratopati,Onlinekhabar,RatopatiEnglish
+from news.spiders import (
+    EverestHeadlines,saralpatrika,Annapurna,Myrepublica,
+    eKantipur,Nagarik,kathmanduPost,Ratopati,RatopatiEnglish,
+    rajdhani,reportersnepal,Onlinekhabar,gorkhapatra,techlekh,
+    arthasarokar,arthikabiyan,aajakokhabar,himalkhabar,nayapage,
+    lokantar,corporatenepal,eadarshsamaj,janaastha,khabarhub,
+    bizmandu,baarakhari,setopati,bbcNepali,news24,onlinekhabarEnglish,
+    onlinemajdur,thakhabar,merolagani,
+    )
 from celery import Celery
 from celery.schedules import crontab
+from Utils import Email
+from Utils import Utils
+
 
 app = Celery('tasks', broker='redis://localhost:6379')
 app.config_from_object('celeryconfig')
@@ -18,23 +29,50 @@ app.config_from_object('celeryconfig')
 app.conf.beat_schedule = {
     "task-news_scrapper-1": {
         "task": "news_scrapper-1",
-        "schedule": crontab(minute="*"),
+        "schedule": crontab(minute="*/2"),
     },
 }
 
 spiders = [
-        #  Annapurna.AnnapurnaScraper,
-        Myrepublica.Myrepublica_Scrapper,
-        #  eKantipur.EKantipur_Scrapper,
+        # Annapurna.AnnapurnaScraper,
+        # Myrepublica.Myrepublica_Scrapper,
+        eKantipur.EKantipur_Scrapper,
         # Nagarik.NagarikScraper,
         # kathmanduPost.KathmanduPost_Scrapper,
-        #  EverestHeadlines.EverestHeadlineScrapper,
-        #  Ratopati.Ratopati_scrapper,
-        #  Onlinekhabar.OnlineKhabarScrapper,
-        #  gorkhapatra.GorkhaPatraOnlineScrapper,
-        #  RatopatiEnglish.EnglishRatopatiScrapper
+        # EverestHeadlines.EverestHeadlineScrapper,
+        # Ratopati.Ratopati_scrapper,
+        # Onlinekhabar.OnlineKhabarScrapper,
+        # gorkhapatra.GorkhaPatraOnlineScrapper,
+        # RatopatiEnglish.EnglishRatopatiScrapper,
+        # saralpatrika.saralpatrika_scrapper,   #saral patrika chalena
+        # techlekh.techlekh_scrapper,
+        # arthasarokar.arthasarokar_scrapper, #date issue
+        # himalkhabar.himalkhabar_scrapper,
+        # nayapage.nayapage_scrapper,
+        # lokantar.lokantar_scrapper,
+        # corporatenepal.corporatenepal_scrapper,  # not working
+        # eadarshsamaj.eadarsha_scrapper,
+        # janaastha.janaastha_scrapper,
+        # khabarhub.khabarhub_scrapper,
+        # reportersnepal.reportersnepal_scrapper, # chaleko chhaina
+        # aajakokhabar.aajakokhabar_scrapper,
+        # arthikabiyan.arthikabiyan_scrapper,
+        # bizmandu.bizamandu_scrapper,
+        # baarakhari.barakhari_scrapper,
+        # setopati.Setopati_Scrapper,
+  
+        # bbcNepali.bbcNepali_scrapper,
+        # news24.News24Scrapper,  #someproblem
+
+        # onlinekhabarEnglish.OnlinekhabarEnglish_scrapper,
+        # onlinemajdur.Onlinemajdur_scarpper,
+        # thakhabar.Thakhabar_scrapper,
+        # rajdhani.rajdhanidaily_scrapper,
+        # merolagani.Merolagani_scrapper
+
         ]
-        # HimalayanTimes.HimalayanScraper, ip blocked 
+    #  hamrokhelkud.hamrokhelkud_scrapper,
+    # HimalayanTimes.HimalayanScraper, ip blocked 
 
 class UrlCrawlerScript(Process):
         def __init__(self, spider):
@@ -56,6 +94,10 @@ def run_spider(url = ""):
         crawler = UrlCrawlerScript(spider)
         crawler.start()
         crawler.join()
+    sent = Email.Report_Email()
+
+    if sent:
+        Utils.delete_report_file()
 
 @app.task(name='news_scrapper-1')
 def crawl():

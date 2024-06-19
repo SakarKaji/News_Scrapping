@@ -5,7 +5,7 @@ import pandas as pd
 import logging
 import os
 
-content_url = 'http://3.144.127.185/api/v1/bot/content'
+content_url = 'http://3.16.15.203/api/v1/bot/content'
 
 def postnews(content:json=None, error:str = None):
     source_name = content['source_name']

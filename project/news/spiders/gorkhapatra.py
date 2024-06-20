@@ -2,17 +2,19 @@ import scrapy
 from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
+from news.article_object import article_data
 
 
 class GorkhaPatraOnlineScrapper(scrapy.Spider):
     name = "Gorkhapatra"
 
     def __init__(self):
-        self.articles_xpath = '//div[contains(@class,"item-content")]/h2/a/@href'
+        self.articlelink_xpath = '//div[contains(@class,"item-content")]/h2/a/@href'
         self.description_xpath = '//div[@class="blog-details"]/p/text()'
         self.title_xpath = '//div[@class="col-lg-12"]/h1/text()'
         self.image_xpath = "//div[@class='blog-banner']/img/@src"
         self.date_xpath = '//*[@id="main"]/section/div/div[1]/div[1]/div[2]/div[2]/div[1]/div/div[2]/span/text()[2]'
+        self.article_source = 'gorkhapatra'
         self.categories = {
             Standard_Category.POLITICS: r'https://gorkhapatraonline.com/categories/politics',
             Standard_Category.BUSINESS: r' https://gorkhapatraonline.com/categories/corporate',
@@ -38,32 +40,13 @@ class GorkhaPatraOnlineScrapper(scrapy.Spider):
                 print(f"Error:{e}")
                 continue
 
-    
     def parse(self, response):
-        links = response.xpath(self.articles_xpath).getall()
+        links = response.xpath(self.articlelink_xpath).getall()
         for link in links:
             yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
-    
-    def parse_article(self, response):
-        url = response.url
-        category = response.meta['category']
-        title = response.xpath(self.title_xpath).get()
-        img_src = response.xpath(self.image_xpath).get()
-        descriptions = response.xpath(self.description_xpath).getall()
-        desc = ''.join(descriptions)
-        content = Utils.word_60(desc)
-        date = response.xpath(self.date_xpath).get()
-        formattedDate = Utils.gorkhapatraonline_datetime_parser(date)
 
-        news = {
-            'title':title,
-            'content_description':content,
-            'published_date':formattedDate,
-            'image_url':img_src,
-            'url':url,
-            'category_name':category,
-            'is_recent':True,
-            'source_name':'gorkhapatra'
-            }
-        PostNews.postnews(news)
-        print(f"---------------category_name: {category},---------------------")
+    def parse_article(self, response):
+        date = response.xpath(self.date_xpath).get()
+        self.formattedDate = Utils.gorkhapatraonline_datetime_parser(date)
+        news_obj = article_data(self, response)
+        PostNews.postnews(news_obj)

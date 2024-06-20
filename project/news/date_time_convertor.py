@@ -16,12 +16,12 @@ def utc_to_nepali(utc_datetime_str):
     return nepali_datetime.strftime("%Y-%m-%d %H:%M:%S"), nepali_datetime.date()
 
 def date_time_object():
-    utc_datetime_str =  datetime.now().isoformat()+'Z'
-    try: 
+    utc_datetime_str =  datetime.now().isoformat() + 'Z'
+    try:
         nepali_datetime_str, nepali_date = utc_to_nepali(utc_datetime_str)
         nepali_year, nepali_month, nepali_day = nepali_date.year, nepali_date.month, nepali_date.day
-        nepali_date = {nepali_year}-{nepali_month}-{nepali_day}
-        return nepali_date 
+        nepali_date_str = f"{nepali_year % 100:04d}-{nepali_day:02d}-{nepali_month:02d}"
+        return nepali_date_str
 
     except ValueError as e:
-        return e
+        return str(e)

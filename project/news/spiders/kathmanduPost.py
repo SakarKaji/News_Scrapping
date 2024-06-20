@@ -1,32 +1,35 @@
 import scrapy
 from Utils import Utils
 from Utils import PostNews
-from Utils.Constants import  Standard_Category
+from Utils.Constants import Standard_Category
 from datetime import datetime
+from news.article_object import article_data
 
-class  KathmanduPost_Scrapper(scrapy.Spider):
+
+class KathmanduPost_Scrapper(scrapy.Spider):
     name = "KathmanduPost"
 
     def __init__(self, name: str | None = None, **kwargs: any):
         super().__init__(name, **kwargs)
 
-        self.start_url = 'https://kathmandupost.com'
+        self.articlelink_xpath = 'https://kathmandupost.com'
         self.title_xpath = '//h1[@style]/text()'
         self.date_xpath = '//div[@class="updated-time"]/text()'
-        self.img_src_xpath = '//div[contains(@class,"row")]/div/img/@data-src'
+        self.image_xpath = '//div[contains(@class,"row")]/div/img/@data-src'
         self.description_xpath = '//section/p/text()'
-        self.categories_xpath = '//div[@id="myOffcanvas"]//ul[contains(@class,"list-unstyled")]/li'
+        self.categories = '//div[@id="myOffcanvas"]//ul[contains(@class,"list-unstyled")]/li'
         self.articles_xpath = '//article[@class="article-image "]'
-        self.article_link_xpath='.//a/@href'
+        self.article_links = './/a/@href'
         self.link_xpath = './/a'
         self.next_page_xpath = "//ul[contains(@class,'pagination')]/li[last()]/a/@href"
+        self.article_source = 'KathmanduPost'
         self.today_date = datetime.today().strftime('%Y-%m-%d')
 
     def start_requests(self):
-        yield scrapy.Request(url=self.start_url, callback=self.parse)
-   
+        yield scrapy.Request(url=self.articlelink_xpath, callback=self.parse)
+
     def parse(self, response):
-        categories = response.xpath(self.categories_xpath)
+        categories = response.xpath(self.categories)
         for category in categories:
             category_link = category.xpath('.//a/@href').get()
             category_text = category.xpath('.//a/text()').get()
@@ -37,30 +40,20 @@ class  KathmanduPost_Scrapper(scrapy.Spider):
             if category_text == "Interviews":
                 break
 
-            yield scrapy.Request(url=link,callback=self.find_article_links,meta={'category': category_text})
-
+            yield scrapy.Request(url=link, callback=self.find_article_links, meta={'category': category_text})
 
     def find_article_links(self, response):
         articles = response.xpath(self.articles_xpath)
         for article in articles:
-            article_link = article.xpath(self.article_link_xpath).get()
+            article_link = article.xpath(self.article_links).get()
             link = response.urljoin(article_link)
             break_url = link.split('/')
             new_date = break_url[4:7]
             date = '-'.join(new_date)
             if date == self .today_date:
-                yield scrapy.Request(url = link,callback = self.parse_article,meta = {'category': response.meta['category']})
+                yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
 
     def parse_article(self, response):
-        url = response.url
-        title = response.xpath(self.title_xpath).get().strip()
-        article_date = response.xpath(self.date_xpath).get()
-        publishedDate = Utils.kathmandupost_conversion(article_date)
-        desc = response.xpath(self.description_xpath).getall()
-        content = ''.join(desc)
-        description = Utils.word_60(content)
-        img_src = response.xpath(self.img_src_xpath).get()
-    
         category = response.meta['category']
 
         if category == "Politics":
@@ -100,19 +93,15 @@ class  KathmanduPost_Scrapper(scrapy.Spider):
             category_name = Standard_Category.SCIENCE_AND_TECHNOLOGY
 
         else:
-            category_name =Standard_Category.OTHERS
+            category_name = Standard_Category.OTHERS
 
-        print(category_name)
+        response.meta['category'] = category_name
+        date = response.xpath(self.date_xpath).get()
 
-        article_data = {
-            'category_name': category_name,
-            'title': title,
-            'published_date': publishedDate,
-            'content_description': description,
-            'img_url': img_src,
-            'url': url,
-            'is_recent':True,
-            'source_name':'KathmanduPost'
-        }
-        # print(f"---------------category_name: {category_name},---------------------")
-        # PostNews.postnews(article_data)
+        if date is None:
+            self.formattedDate = None
+        else:
+            self.formattedDate = Utils.kathmandupost_conversion(date)
+
+        news_obj = article_data(self, response)
+        PostNews.postnews(news_obj)

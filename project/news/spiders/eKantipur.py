@@ -10,19 +10,19 @@ class EKantipur_Scrapper(scrapy.Spider):
     name = "ekantipur"
     start_urls = ["https://ekantipur.com/"]
 
-    def __init__(self, name: str | None = None, **kwargs: any):
-        super().__init__(name, **kwargs)
+    def __init__(self):
         self.data = []
-        self.navPath = '//ul/li[@class="nav-item "]'
+        self.articlelink_xpath = '//ul/li[@class="nav-item "]'
         self.title_xpath = "//div[@class='article-header']/h1/text()"
-        self.article_date = "//div[@class='time-author']/time/text()"
+        self.date_xpath = "//div[@class='time-author']/time/text()"
         self.description_xpath = "//div[contains(@class,'description')]//p/text()"
         self.link_xpath = "//article[@class='normal']/div[@class='teaser offset']/h2/a/@href"
         self.image_xpath = "//div[@class='description current-news-block']/div[@class='image']/figure/img/@data-src"
         self.today_date = datetime.today().strftime('%Y-%m-%d')
+        self.article_source = "ekantipur"
 
     def parse(self, response):
-        for links in response.xpath(self.navPath): 
+        for links in response.xpath(self.articlelink_xpath):
             category = links.xpath(".//a/text()").extract_first()
             category_link = links.xpath(".//a/@href").extract_first()
             if category and category_link != None:
@@ -32,25 +32,26 @@ class EKantipur_Scrapper(scrapy.Spider):
         links = []
         category = response.meta["category"]
         if category == "अर्थ / वाणिज्य":
-            links = response.xpath('(//div[@class="bazar-layout"]//article//figure//a[1]/@href)').extract()
+            links = response.xpath(
+                '(//div[@class="bazar-layout"]//article//figure//a[1]/@href)').extract()
             for link in links:
                 list = link.split('/')
                 date_list = list[4:7]
-                date= "-".join(date_list)
+                date = "-".join(date_list)
                 if date == self.today_date:
                     if not link.startswith('https://'):
                         each_link = "https://ekantipur.com" + link
-                        yield scrapy.Request( url=each_link, callback=self.scrape_each_article, meta={"link": each_link, "category": category})
-                    yield scrapy.Request( url=link, callback=self.scrape_each_article, meta={"link": link, "category": category})
+                        yield scrapy.Request(url=each_link, callback=self.scrape_each_article, meta={"link": each_link, "category": category})
+                    yield scrapy.Request(url=link, callback=self.scrape_each_article, meta={"link": link, "category": category})
 
         links = response.xpath(self.link_xpath).extract()
         for link in links:
             list = link.split('/')
             date_list = list[2:5]
-            date= "-".join(date_list)
+            date = "-".join(date_list)
             if date == self.today_date:
                 each_link = "https://ekantipur.com" + link
-                yield scrapy.Request( url=each_link, callback=self.scrape_each_article, meta={"link": each_link, "category": category})
+                yield scrapy.Request(url=each_link, callback=self.scrape_each_article, meta={"link": each_link, "category": category})
 
     def scrape_each_article(self, response):
         category = response.meta["category"]
@@ -71,6 +72,7 @@ class EKantipur_Scrapper(scrapy.Spider):
         }
         category_name = category_mapping[category]
         response.meta["category"] = category_name
-        news_dict = article_data(self,response,"ekantipur")
-        print(f"News object :: {news_dict}")
-        PostNews.postnews(news_dict)
+        date = response.xpath(self.date_xpath).get()
+        self.formattedDate = Utils.ekantipur_conversion(date)
+        news_obj = article_data(self, response)
+        PostNews.postnews(news_obj)

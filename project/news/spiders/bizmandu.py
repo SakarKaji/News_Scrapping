@@ -12,6 +12,7 @@ class bizamandu_scrapper(scrapy.Spider):
         self.title_xpath = '//h1[@class="title-xxl detail_title"]/text()'
         self.image_xpath = '//div[@class="coverimage wp-block-image"]/img/@src'
         self.date_xpath = '//div[@class="author"]/div[@class="right-icon"]/span/text()'
+        self.source = "ekantipur"
         self.categories = {
             Standard_Category.ECONOMY: r'https://bizmandu.com/content/category/market.html',
             Standard_Category.BUSINESS: r'https://bizmandu.com/content/category/corporate.html',

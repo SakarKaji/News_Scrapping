@@ -1,29 +1,77 @@
-# from core.db.connection import SessionLocal
-# from models.content import Content as ModelContent
-# from models.source import Category as ModelCategory
-# from models.source import Source as ModelSource
-# from models.source import Language as ModelLanguage
-import html
-# from sqlalchemy import func
-# from fastapi import (
-#     HTTPException,
-#     status
-# )
 import json
-# from core.utils.constants import Message
 import requests
-from Utils import Utils
+from .Utils import *
+import pandas as pd
+import logging
+import os
+
+content_url = 'http://3.16.15.203/api/v1/bot/content'
 
 
-# db = SessionLocal()
+def postnews(content: json = None, error: str = None):
+    source_name = content['source_name']
 
-content_url = 'http://3.144.127.185/api/v1/bot/content'
+    if content is None:
+        status = "Error"
+        log = f"Error received in {source_name} while scrapping beacause of {error}."
 
-def postnews(content:json=None):
-    try:
-        res = requests.post(content_url,json=content)
-        print(res)
-    except Exception as e:
-        print(e)
+    else:
+        header = content['title']
+        content_description = content['content_description']
+        published_date = content['published_date']
+        category = content['category_name']
 
+        print(header, content_description, published_date, category)
 
+        if (content_description is None or published_date is None):
+            logging.error(f"invalid data {content} for {source_name}")
+            status = 'Error'
+            log = f"invalid data {content}"
+            return False
+
+        res = requests.post(content_url, json=content)
+        print(f"Response :: {res}")
+
+        return_text = res.json().get('detail', '')
+
+        if return_text == "Duplicate object":
+            logging.error(f"duplicate {header} for {source_name}")
+            status = "Duplicate"
+            log = f"duplicate {header}"
+
+        elif res.status_code == 200:
+            logging.info(
+                f"news post success for {source_name} with title {header}")
+            status = "Success"
+            log = f"news post success for title {header}"
+
+        elif res.status_code == 400:
+            logging.info(
+                f"news post failure for {source_name} with title {header}")
+            status = "Faliure"
+            log = f"news post faliure for title {header}"
+
+        else:
+            logging.info(
+                f"news post  for {source_name} with title {header}")
+            status = "Unknown"
+            log = f"news post unknown for title {header}"
+
+    log_data = {
+        'source': [source_name] or [None],
+        'category': [category] or [None],
+        'status': [status] or [None],
+        'log': [log] or [None]
+    }
+    df = pd.DataFrame(log_data)
+
+    file_path = get_report_file_path()
+
+    if not file_path:
+        return
+
+    if not os.path.isfile(file_path):
+        df.to_csv(file_path, mode='w', index=False, header=True)
+
+    else:
+        df.to_csv(file_path, mode='a', index=False, header=False)

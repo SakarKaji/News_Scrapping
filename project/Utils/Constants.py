@@ -16,5 +16,17 @@ class Standard_Category():
     SOCIETY = "society"
     HEALTH = "health"
     WEATHER = "weather"
-    OTHERS = "others"
- 
+    OTHERS = "others" 
+    
+    प्रवास = "travel"
+    अर्थ ="finance"
+    वाणिज्य= "finance"
+    विचार= "opinion/thoughts"
+    खेलकुद= "sports"
+    मनोरञ्जन= "entertainment"
+    शिक्षा= "education"
+    अर्थतन्त्र = 'economy'
+    स्वास्थ्य= 'health',
+    साहित्य= 'art',
+           
+

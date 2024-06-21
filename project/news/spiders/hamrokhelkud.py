@@ -5,6 +5,7 @@ from Utils import Utils
 from Utils import PostNews
 import time
 
+
 class hamrokhelkud_scrapper(scrapy.Spider):
     name = "hamrokhelkud"
 
@@ -20,26 +21,24 @@ class hamrokhelkud_scrapper(scrapy.Spider):
             Standard_Category.SPORTS: r'https://www.hamrokhelkud.com/category/cricket',
             Standard_Category.SPORTS: r'https://www.hamrokhelkud.com/category/volleyball'
         }
-        
 
     def start_requests(self):
         print("---------Scraping hamrokhelkud -----------")
         for category in self.categories:
             try:
+                print((category))
                 yield scrapy.Request(url=self.categories[category], callback=self.parse, meta={'category': category})
             except Exception as e:
                 print(f"Error:{e}")
                 continue
 
     def parse(self, response):
-
- 
         links = response.xpath(self.articleslink_xpath).getall()
-     
-
         for link in links:
-            yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
-
+            try:
+                yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
+            except Exception as e:
+                print(f"Error in {link}")
 
     def parse_article(self, response):
         url = response.url
@@ -54,13 +53,13 @@ class hamrokhelkud_scrapper(scrapy.Spider):
         formattedDate = Utils.hamrokhelkud_conversion(date)
 
         news = {
-            'title':title.strip(),
-            'content_description':content,
-            'published_date':formattedDate,
-            'image_url':img_src,
-            'url':url,
-            'category_name':category,
-            'is_recent':True,
-            'source_name':'hamrokhelkud'
-            }
+            'title': title.strip(),
+            'content_description': content,
+            'published_date': formattedDate,
+            'image_url': img_src,
+            'url': url,
+            'category_name': category,
+            'is_recent': True,
+            'source_name': 'hamrokhelkud'
+        }
         PostNews.postnews(news)

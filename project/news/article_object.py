@@ -1,8 +1,6 @@
-from Utils import Utils
-
 def article_data(self, response):
     try:
-        url = response.url
+        url = response.url or response.meta['link']
         category = response.meta['category']
         title = response.xpath(self.title_xpath).extract_first().strip()
         img_src = response.xpath(self.image_xpath).get()
@@ -20,7 +18,7 @@ def article_data(self, response):
             'source_name': self.article_source,
         }
         return news
-    
+
     except Exception as e:
         print(f"error received in {e}")
         return

@@ -43,5 +43,6 @@ class EverestHeadlineScrapper(scrapy.Spider):
     def parse_article(self, response):
         date = response.xpath(self.date_xpath).get()
         self.formattedDate = Utils.everestHeadlines_conversion(date)
+        
         news_obj = article_data(self, response)
         PostNews.postnews(news_obj)

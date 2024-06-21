@@ -1,26 +1,28 @@
-# http://stackoverflow.com/questions/24232744/scrapy-spider-not-following-links-when-using-celery
-
 from celery.app import shared_task
 from celery.app.base import Celery
-from scrapy.crawler import CrawlerProcess
-from scrapy import settings
-# from scrapy import log, project, signals
-from twisted.internet import reactor
-from billiard import Process
-from scrapy.utils.project import get_project_settings
-from news.spiders import (
-    EverestHeadlines, saralpatrika, Annapurna, Myrepublica,
-    eKantipur, Nagarik, kathmanduPost, Ratopati, RatopatiEnglish,
-    rajdhani, reportersnepal, Onlinekhabar, gorkhapatra, techlekh,
-    arthasarokar, arthikabiyan, aajakokhabar, himalkhabar, nayapage,
-    lokantar, corporatenepal, eadarshsamaj, janaastha, khabarhub,
-    bizmandu, baarakhari, setopati, bbcNepali, news24, onlinekhabarEnglish,
-    onlinemajdur, thakhabar, merolagani,
-)
 from celery import Celery
 from celery.schedules import crontab
+
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
+
+from billiard import Process
+from news.spiders import (
+    EverestHeadlines, saralpatrika, Annapurna, Myrepublica,
+    eKantipur, Nagarik, kathmanduPost, Ratopati,
+    RatopatiEnglish, rajdhani, reportersnepal, Onlinekhabar,
+    gorkhapatra, techlekh, arthasarokar, arthikabiyan,
+    aajakokhabar, himalkhabar, nayapage, lokantar,
+    corporatenepal, eadarshsamaj, janaastha, khabarhub,
+    bizmandu, baarakhari, setopati, bbcNepali,
+    news24, onlinekhabarEnglish, onlinemajdur, thakhabar, merolagani,
+    hamrokhelkud
+)
+
 from Utils import Email
 from Utils import Utils
+
+# from twisted.internet import reactor
 
 
 app = Celery('tasks', broker='redis://localhost:6379')
@@ -35,19 +37,19 @@ app.conf.beat_schedule = {
 
 spiders = [
     # Annapurna.AnnapurnaScraper,
-    Myrepublica.Myrepublica_Scrapper,
+    # Myrepublica.Myrepublica_Scrapper,
     # eKantipur.EKantipur_Scrapper,
     # Nagarik.NagarikScraper,
     # kathmanduPost.KathmanduPost_Scrapper,
     # EverestHeadlines.EverestHeadlineScrapper,
     # Ratopati.Ratopati_scrapper,
-    # Onlinekhabar.OnlineKhabarScrapper,
+    #  Onlinekhabar.OnlineKhabarScrapper,
     # gorkhapatra.GorkhaPatraOnlineScrapper,
     # RatopatiEnglish.EnglishRatopatiScrapper,
     # saralpatrika.saralpatrika_scrapper,   #saral patrika chalena
     # techlekh.techlekh_scrapper,
     # arthasarokar.arthasarokar_scrapper, #date issue
-    # himalkhabar.himalkhabar_scrapper,
+    himalkhabar.himalkhabar_scrapper,
     # nayapage.nayapage_scrapper,
     # lokantar.lokantar_scrapper,
     # corporatenepal.corporatenepal_scrapper,  # not working
@@ -68,10 +70,9 @@ spiders = [
     # onlinemajdur.Onlinemajdur_scarpper,
     # thakhabar.Thakhabar_scrapper,
     # rajdhani.rajdhanidaily_scrapper,
-    # merolagani.Merolagani_scrapper
-
+    # merolagani.Merolagani_scrapper,
 ]
-#  hamrokhelkud.hamrokhelkud_scrapper,
+# hamrokhelkud.hamrokhelkud_scrapper,
 # HimalayanTimes.HimalayanScraper, ip blocked
 
 

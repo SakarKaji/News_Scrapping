@@ -18,49 +18,52 @@ class NagarikScraper(scrapy.Spider):
         self.desc_xpath = '//article/p/text()'
         self.img_xpath = '(//div[contains(@class,"image")]/img)[1]'
         self.outer_date_xpath = "//time[contains(@class,'npdate')]/@data-pdate"
-        self.dates= []
+        self.dates = []
         self.links = []
         self.today_date = datetime.today().strftime('%Y-%m-%d')
 
         self.categories = {
-            # Standard_Category.POLITICS: r'https://nagariknews.nagariknetwork.com/politics',
-            # Standard_Category.SOCIETY: r'https://nagariknews.nagariknetwork.com/social-affairs',
-            # Standard_Category.ECONOMY: r'https://nagariknews.nagariknetwork.com/economy',
-            # Standard_Category.ART: r'https://nagariknews.nagariknetwork.com/arts',
-            # Standard_Category.OPINION: r'https://nagariknews.nagariknetwork.com/opinion',
-            # Standard_Category.TRAVEL: r'https://nagariknews.nagariknetwork.com/tag/ghumfir',
-            # Standard_Category.SPORTS: r'https://nagariknews.nagariknetwork.com/sports',
-            # Standard_Category.EDUCATION: r'https://nagariknews.nagariknetwork.com/education',
-            # Standard_Category.SCIENCE_AND_TECHNOLOGY: r'https://nagariknews.nagariknetwork.com/technology',
-            # Standard_Category.INTERNATIONAL: r'https://nagariknews.nagariknetwork.com/international',
-            # Standard_Category.HEALTH: r'https://nagariknews.nagariknetwork.com/health',
-            Standard_Category.OTHERS: r"https://nagariknews.nagariknetwork.com/others",
-            # Standard_Category.OTHERS: [
-            #                     r"https://nagariknews.nagariknetwork.com/tag/biwidh",
-            #                     r"https://nagariknews.nagariknetwork.com/others",
-            #                     r"https://nagariknews.nagariknetwork.com/blog",
-            #                     r"https://nagariknews.nagariknetwork.com/nagarik-khoj",
-            #                     r'https://nagariknews.nagariknetwork.com/interview',
-            #                     r'https://nagariknews.nagariknetwork.com/diaspora',
-            #                     r'https://nagariknews.nagariknetwork.com/photo-feature',
-            #                     r'https://nagariknews.nagariknetwork.com/interview',
-            #                            ]
-                                }
+            #     Standard_Category.POLITICS: r'https://nagariknews.nagariknetwork.com/politics',
+            #     Standard_Category.SOCIETY: r'https://nagariknews.nagariknetwork.com/social-affairs',
+            #     Standard_Category.ECONOMY: r'https://nagariknews.nagariknetwork.com/economy',
+            #     Standard_Category.ART: r'https://nagariknews.nagariknetwork.com/arts',
+            #     Standard_Category.OPINION: r'https://nagariknews.nagariknetwork.com/opinion',
+            #     Standard_Category.TRAVEL: r'https://nagariknews.nagariknetwork.com/tag/ghumfir',
+            #     Standard_Category.SPORTS: r'https://nagariknews.nagariknetwork.com/sports',
+            #     Standard_Category.EDUCATION: r'https://nagariknews.nagariknetwork.com/education',
+            #     Standard_Category.SCIENCE_AND_TECHNOLOGY: r'https://nagariknews.nagariknetwork.com/technology',
+            #     Standard_Category.INTERNATIONAL: r'https://nagariknews.nagariknetwork.com/international',
+            #     Standard_Category.HEALTH: r'https://nagariknews.nagariknetwork.com/health',
+            Standard_Category.OTHERS: [
+                "https://nagariknews.nagariknetwork.com/tag/biwidh",
+                "https://nagariknews.nagariknetwork.com/others",
+                "https://nagariknews.nagariknetwork.com/blog",
+                "https://nagariknews.nagariknetwork.com/nagarik-khoj",
+                'https://nagariknews.nagariknetwork.com/interview',
+                'https://nagariknews.nagariknetwork.com/diaspora',
+                'https://nagariknews.nagariknetwork.com/photo-feature',
+                'https://nagariknews.nagariknetwork.com/interview',
+            ]
+        }
 
     def start_requests(self):
         for category in self.categories:
             try:
-                yield scrapy.Request(url=self.categories[category], callback=self.parse, meta={'category': category})
+                if category == "others":
+                    for inner_category_url in self.categories[category]:
+                        print(inner_category_url)
+                        yield scrapy.Request(url=inner_category_url, callback=self.parse, meta={'category': category})
+                else:
+                    yield scrapy.Request(url=self.categories[category], callback=self.parse, meta={'category': category})
+
             except Exception as e:
-                print(f"Error:{e}")
-                continue
+                print(f"Error: {e}")
 
     def parse(self, response):
-    
         article1 = response.xpath(self.article_xpath1)
         article2 = response.xpath(self.article_xpath2)
         articles = article1 + article2
-        
+
         outer_dates = response.xpath(self.outer_date_xpath)
         for date in outer_dates:
             date_obj = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S")
@@ -71,8 +74,8 @@ class NagarikScraper(scrapy.Spider):
             get_link = article.xpath(self.link_xpath).attrib['href']
             link = f"https://nagariknews.nagariknetwork.com{get_link}"
             self.links.append(link)
-            
-        for link, date in zip(self.links,self.dates):
+
+        for link, date in zip(self.links, self.dates):
             if date != self.today_date:
                 break
             yield scrapy.Request(url=link, callback=self.parse_article, meta={'link': link, 'category': response.meta["category"]})
@@ -99,4 +102,5 @@ class NagarikScraper(scrapy.Spider):
             'source_name': 'nagariknews'
         }
         PostNews.postnews(news)
-        print('==============================================================================')
+        print(
+            '==============================================================================')

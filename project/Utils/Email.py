@@ -13,7 +13,7 @@ load_dotenv()
 def Report_Email():
     fromaddr = os.getenv('FROM_ADDR')
     password = os.getenv('PASSWORD')
-    toaddrs = ['bishalfox@yopmail.com']
+    toaddrs = [os.getenv('TO_ADDR')]
 
     if not fromaddr or not password:
         print("Error: FROM_ADDR and PASSWORD must be set in the .env file")
@@ -22,9 +22,9 @@ def Report_Email():
     msg = MIMEMultipart()
 
     msg['From'] = fromaddr
-    msg['Subject'] = "Mail from Scrapy 1 bot"
+    msg['Subject'] = "Status mail from Quick Samachar Scrapy Bot"
 
-    body = "This mail contains the scraped news from the last bot run"
+    body = "This mail contains the scraped news from the last bot run. Kindly find the attachment."
     msg.attach(MIMEText(body, 'plain'))
 
     try:
@@ -57,7 +57,7 @@ def Report_Email():
 def error_report_email(data):
     fromaddr = os.getenv('FROM_ADDR')
     password = os.getenv('PASSWORD')
-    toaddrs = ['bishalfox@yopmail.com']
+    toaddrs = [os.getenv('TO_ADDR')]
 
     if not fromaddr or not password:
         print("Error: FROM_ADDR and PASSWORD must be set in the .env file")

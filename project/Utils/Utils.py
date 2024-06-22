@@ -354,7 +354,6 @@ def setopati_datetime_parser(nepali_date):
     formatted_datetime = english_date.strftime("%Y-%m-%d")
     return formatted_datetime
 
-
 def get_report_file_path():
     return os.path.join(os.getcwd(), 'output', f'Status-Report-{datetime.today().now().date()}.csv')
 

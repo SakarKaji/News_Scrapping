@@ -39,7 +39,7 @@ spiders = [
     # Annapurna.AnnapurnaScraper,
     # Myrepublica.Myrepublica_Scrapper,
     # eKantipur.EKantipur_Scrapper,
-    Nagarik.NagarikScraper,
+    # Nagarik.NagarikScraper,
     # kathmanduPost.KathmanduPost_Scrapper,
     # EverestHeadlines.EverestHeadlineScrapper,
     # Ratopati.Ratopati_scrapper,
@@ -51,7 +51,7 @@ spiders = [
     # arthasarokar.arthasarokar_scrapper, #date issue
     # himalkhabar.himalkhabar_scrapper,
     # nayapage.nayapage_scrapper,
-    # lokantar.lokantar_scrapper,
+    lokantar.lokantar_scrapper,
     # corporatenepal.corporatenepal_scrapper,  # not working
     # eadarshsamaj.eadarsha_scrapper,
     # janaastha.janaastha_scrapper,

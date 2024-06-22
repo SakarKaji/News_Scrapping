@@ -4,6 +4,7 @@ from Utils import Utils
 from Utils import PostNews
 import logging
 import time
+from lxml import html
 
 
 class lokantar_scrapper(scrapy.Spider):
@@ -15,7 +16,7 @@ class lokantar_scrapper(scrapy.Spider):
         self.description_xpath = '//div[@class="detail-content"]/div/p/text()'
         self.title_xpath = 'normalize-space(//div[@class="detail-content-title"]/h1)'
         self.image_xpath = '//div[@class="col-lg-12 col-md-12"]/img/@src'
-        self.date_xpath = '//div[@class="detail-content-location-date mt-2 "]/p/span[2]/text()'
+        self.date_xpath = '//div[@class="detail-content-location-date mt-2 "]//p'
         self.categories = {
             Standard_Category.OTHERS: r'https://www.lokaantar.com/category/khoj',
             Standard_Category.OTHERS: r'https://www.lokaantar.com/category/feature',
@@ -39,7 +40,6 @@ class lokantar_scrapper(scrapy.Spider):
             Standard_Category.OTHERS: r'https://www.lokaantar.com/category/governance',
             Standard_Category.SPORTS: r'https://www.lokaantar.com/category/sports',
             Standard_Category.POLITICS: r'https://www.lokaantar.com/category/politics'
-
         }
 
     def start_requests(self):
@@ -85,7 +85,22 @@ class lokantar_scrapper(scrapy.Spider):
         desc = ''.join(descriptions)
         content = Utils.word_60(desc)
         img_src = response.xpath(self.image_xpath).get()
-        date = response.xpath(self.date_xpath).get()
+        date_string = response.xpath(self.date_xpath).get()
+        # Convert the string to an lxml element
+        p_element = html.fromstring(date_string)
+
+        # Extract the text content of the <span> elements
+        spans = p_element.xpath('.//span/text()')
+        print(f"Spans: {spans}")
+        # Determine the date string based on the number of <span> elements
+        if len(spans) == 2:
+            date = spans[1]  # Take the second <span> if there are two
+        elif len(spans) == 1:
+            # Take the first <span> if there is only one
+            date = spans[0]
+        else:
+            date = None
+
         formattedDate = Utils.lokaantar_conversion(date)
 
         news = {

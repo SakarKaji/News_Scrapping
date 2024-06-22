@@ -7,11 +7,15 @@ import nepali_datetime
 from datetime import datetime
 from datetime import timedelta
 
+# Donot change unless and until stated
 nepali_month_mapping = {
     "वैशाख": 1,
+    "बैशा ख": 1,
+    "बैशाख": 1,
     "जेठ": 2,
     "जेष्ठ": 2,
     "असार": 3,
+    "आषाढ": 3,
     "साउन": 4,
     "श्रावण": 4,
     "भदौ": 5,
@@ -24,6 +28,7 @@ nepali_month_mapping = {
     "मङ्सिर": 8,
     "पुस": 9,
     "पुष": 9,
+    "पौष": 9,
     "माघ": 10,
     "फागुन": 11,
     "फाल्गुन": 11,
@@ -322,6 +327,20 @@ def himalkhabar_conversion(date):
     english_date = date_object.to_datetime_date()
     formatted_date = english_date.strftime("%Y-%m-%d")
     return formatted_date
+
+
+def lokaantar_conversion(date):
+    date_string = date
+    date_parts = date_string.split(" ")
+    nepali_day = int(date_parts[1].strip(','))
+    nepali_month = nepali_month_mapping[date_parts[0]]
+    nepali_year = int(date_parts[2])
+
+    formatted_date = f"{nepali_month:02d}/{nepali_day:02d}/{nepali_year}"
+    dateobject = nepali_datetime.datetime.strptime(formatted_date, "%m/%d/%Y")
+    english_date = dateobject.to_datetime_date()
+    formatted_date = english_date.strftime('%Y-%m-%d')
+    return str(formatted_date)
 
 
 def get_report_file_path():

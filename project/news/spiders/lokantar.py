@@ -5,14 +5,17 @@ from Utils import PostNews
 import logging
 import time
 
+
 class lokantar_scrapper(scrapy.Spider):
     name = "lokantar"
 
     def __init__(self):
         self.articleslink_xpath_main = '//div[@class="horizontal-main-grid-content"]/a/@href'
-        self.articleslink_xpath= '//div[@class="simple-grid-section-content"]/div/a/@href'
+        self.articleslink_xpath = '//div[@class="simple-grid-section-content"]/div/a/@href'
         self.description_xpath = '//div[@class="detail-content"]/div/p/text()'
         self.title_xpath = '//div[@class="detail-content-title"]/h2/text()'
+        self.title_xpath2 = '//span[@class="orange-highlight"]/text()'
+        self.title_xpath3 = '//span[@class="main-title"]/text()'
         self.image_xpath = '//div[@class="col-lg-12 col-md-12"]/img/@src'
         self.date_xpath = '//div[@class="detail-content-location-date mt-2 "]/p/span[2]/text()'
         self.categories = {
@@ -40,7 +43,6 @@ class lokantar_scrapper(scrapy.Spider):
             Standard_Category.POLITICS: r'https://www.lokaantar.com/category/politics'
 
         }
-        
 
     def start_requests(self):
         for category in self.categories:
@@ -53,17 +55,32 @@ class lokantar_scrapper(scrapy.Spider):
     def parse(self, response):
         time.sleep(5)
         print(response.url)
-        link1= response.xpath(self.articleslink_xpath_main).getall()
+        link1 = response.xpath(self.articleslink_xpath_main).getall()
         link2 = response.xpath(self.articleslink_xpath).getall()
         links = link1 + link2
         for link in links:
-            yield scrapy.Request(url=response.urljoin(link), callback=self.parse_article, meta={'category': response.meta['category']})
+            try:
+                print(f"Link :: {response.urljoin(link)}")
+                yield scrapy.Request(url=response.urljoin(link), callback=self.parse_article, meta={'category': response.meta['category']})
 
+            except Exception as e:
+                print(f"Error in link {link}")
 
     def parse_article(self, response):
         time.sleep(5)
         url = response.url
         category = response.meta['category']
+        title_xpaths = [self.title_xpath, self.title_xpath2, self.title_xpath3]
+        title = None
+
+        for xpath in title_xpaths:
+            extract_path = response.xpath(xpath).extract_first()
+            if extract_path:
+                title = extract_path.strip()
+            if title:
+                self.title_xpath = xpath
+                break
+            
         title = response.xpath(self.title_xpath).get()
         descriptions = response.xpath(self.description_xpath).getall()
         desc = ''.join(descriptions)
@@ -73,14 +90,14 @@ class lokantar_scrapper(scrapy.Spider):
         formattedDate = Utils.lokaantar_conversion(date)
 
         news = {
-            'title':title.strip(),
-            'content_description':content,
-            'published_date':formattedDate,
-            'image_url':img_src,
-            'url':url,
-            'category_name':category,
-            'is_recent':True,
-            'source_name':'lokaantar'
-            }
+            'title': title.strip(),
+            'content_description': content,
+            'published_date': formattedDate,
+            'image_url': img_src,
+            'url': url,
+            'category_name': category,
+            'is_recent': True,
+            'source_name': 'lokaantar'
+        }
         logging.basicConfig(level=logging.INFO)
         PostNews.postnews(news)

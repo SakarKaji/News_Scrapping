@@ -4,3 +4,4 @@ nepali-datetime==1.0.8.2
 Scrapy==2.11.1
 redis==5.0.2
 pandas==2.2.2
+python-dotenv==1.0.1

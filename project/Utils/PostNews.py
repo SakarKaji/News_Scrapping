@@ -29,6 +29,8 @@ def postnews(content: json = None, error: str = None):
             log = f"invalid data {content}"
             return False
 
+        print(f"URL :: {content_url}, Content :: {content}")
+      
         res = requests.post(content_url, json=content)
         print(f"Response :: {res}")
 

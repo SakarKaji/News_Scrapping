@@ -13,9 +13,7 @@ class lokantar_scrapper(scrapy.Spider):
         self.articleslink_xpath_main = '//div[@class="horizontal-main-grid-content"]/a/@href'
         self.articleslink_xpath = '//div[@class="simple-grid-section-content"]/div/a/@href'
         self.description_xpath = '//div[@class="detail-content"]/div/p/text()'
-        self.title_xpath = '//div[@class="detail-content-title"]/h2/text()'
-        self.title_xpath2 = '//span[@class="orange-highlight"]/text()'
-        self.title_xpath3 = '//span[@class="main-title"]/text()'
+        self.title_xpath = 'normalize-space(//div[@class="detail-content-title"]/h1)'
         self.image_xpath = '//div[@class="col-lg-12 col-md-12"]/img/@src'
         self.date_xpath = '//div[@class="detail-content-location-date mt-2 "]/p/span[2]/text()'
         self.categories = {
@@ -47,13 +45,13 @@ class lokantar_scrapper(scrapy.Spider):
     def start_requests(self):
         for category in self.categories:
             try:
+                print(f"Category :: {category}")
                 yield scrapy.Request(url=self.categories[category], callback=self.parse, meta={'category': category})
             except Exception as e:
                 print(f"Error:{e}")
                 continue
 
     def parse(self, response):
-        time.sleep(5)
         print(response.url)
         link1 = response.xpath(self.articleslink_xpath_main).getall()
         link2 = response.xpath(self.articleslink_xpath).getall()
@@ -70,7 +68,7 @@ class lokantar_scrapper(scrapy.Spider):
         time.sleep(5)
         url = response.url
         category = response.meta['category']
-        title_xpaths = [self.title_xpath, self.title_xpath2, self.title_xpath3]
+        title_xpaths = [self.title_xpath]
         title = None
 
         for xpath in title_xpaths:
@@ -80,8 +78,9 @@ class lokantar_scrapper(scrapy.Spider):
             if title:
                 self.title_xpath = xpath
                 break
-            
+
         title = response.xpath(self.title_xpath).get()
+        print(f"Title :: {title}")
         descriptions = response.xpath(self.description_xpath).getall()
         desc = ''.join(descriptions)
         content = Utils.word_60(desc)

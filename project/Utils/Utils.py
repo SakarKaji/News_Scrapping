@@ -117,7 +117,6 @@ def kathmandupost_conversion(date):
 
 
 def bbcnepali_date_conversion(cleaned_time):
-    print(cleaned_time)
     date_object = datetime.strptime(cleaned_time, "%m/%d/%Y")
     formatted_date = date_object.strftime("%Y-%m-%d")
     return str(formatted_date)
@@ -341,6 +340,19 @@ def lokaantar_conversion(date):
     english_date = dateobject.to_datetime_date()
     formatted_date = english_date.strftime('%Y-%m-%d')
     return str(formatted_date)
+
+
+def setopati_datetime_parser(nepali_date):
+    date_parts = nepali_date.split()
+    nepali_year = int(date_parts[5].replace(',', ''))
+    nepali_day = ''.join(filter(str.isdigit, date_parts[4]))
+    nepali_day = int(nepali_day)
+    nepali_month = nepali_month_mapping[date_parts[3]]
+    formatted_date = f"{nepali_month:02d}/{nepali_day:02d}/{nepali_year}"
+    date_object = nepali_datetime.datetime.strptime(formatted_date, "%m/%d/%Y")
+    english_date = date_object.to_datetime_date()
+    formatted_datetime = english_date.strftime("%Y-%m-%d")
+    return formatted_datetime
 
 
 def get_report_file_path():

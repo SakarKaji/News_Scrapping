@@ -23,17 +23,17 @@ class NagarikScraper(scrapy.Spider):
         self.today_date = datetime.today().strftime('%Y-%m-%d')
 
         self.categories = {
-            #     Standard_Category.POLITICS: r'https://nagariknews.nagariknetwork.com/politics',
-            #     Standard_Category.SOCIETY: r'https://nagariknews.nagariknetwork.com/social-affairs',
-            #     Standard_Category.ECONOMY: r'https://nagariknews.nagariknetwork.com/economy',
-            #     Standard_Category.ART: r'https://nagariknews.nagariknetwork.com/arts',
-            #     Standard_Category.OPINION: r'https://nagariknews.nagariknetwork.com/opinion',
-            #     Standard_Category.TRAVEL: r'https://nagariknews.nagariknetwork.com/tag/ghumfir',
-            #     Standard_Category.SPORTS: r'https://nagariknews.nagariknetwork.com/sports',
-            #     Standard_Category.EDUCATION: r'https://nagariknews.nagariknetwork.com/education',
-            #     Standard_Category.SCIENCE_AND_TECHNOLOGY: r'https://nagariknews.nagariknetwork.com/technology',
-            #     Standard_Category.INTERNATIONAL: r'https://nagariknews.nagariknetwork.com/international',
-            #     Standard_Category.HEALTH: r'https://nagariknews.nagariknetwork.com/health',
+            Standard_Category.POLITICS: r'https://nagariknews.nagariknetwork.com/politics',
+            Standard_Category.SOCIETY: r'https://nagariknews.nagariknetwork.com/social-affairs',
+            Standard_Category.ECONOMY: r'https://nagariknews.nagariknetwork.com/economy',
+            Standard_Category.ART: r'https://nagariknews.nagariknetwork.com/arts',
+            Standard_Category.OPINION: r'https://nagariknews.nagariknetwork.com/opinion',
+            Standard_Category.TRAVEL: r'https://nagariknews.nagariknetwork.com/tag/ghumfir',
+            Standard_Category.SPORTS: r'https://nagariknews.nagariknetwork.com/sports',
+            Standard_Category.EDUCATION: r'https://nagariknews.nagariknetwork.com/education',
+            Standard_Category.SCIENCE_AND_TECHNOLOGY: r'https://nagariknews.nagariknetwork.com/technology',
+            Standard_Category.INTERNATIONAL: r'https://nagariknews.nagariknetwork.com/international',
+            Standard_Category.HEALTH: r'https://nagariknews.nagariknetwork.com/health',
             Standard_Category.OTHERS: [
                 "https://nagariknews.nagariknetwork.com/tag/biwidh",
                 "https://nagariknews.nagariknetwork.com/others",
@@ -51,7 +51,6 @@ class NagarikScraper(scrapy.Spider):
             try:
                 if category == "others":
                     for inner_category_url in self.categories[category]:
-                        print(inner_category_url)
                         yield scrapy.Request(url=inner_category_url, callback=self.parse, meta={'category': category})
                 else:
                     yield scrapy.Request(url=self.categories[category], callback=self.parse, meta={'category': category})
@@ -102,5 +101,3 @@ class NagarikScraper(scrapy.Spider):
             'source_name': 'nagariknews'
         }
         PostNews.postnews(news)
-        print(
-            '==============================================================================')

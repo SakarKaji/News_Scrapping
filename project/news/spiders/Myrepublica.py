@@ -31,10 +31,12 @@ class Myrepublica_Scrapper(scrapy.Spider):
             category = links.xpath('.//a/span/text()').get()
             link = 'https://myrepublica.nagariknetwork.com' + href
 
-            if link and category != None:
+            print({link}, {category})
+            if link and category:
                 yield scrapy.Request(url=link, callback=self.parse_link, meta={'link': link, 'category': category})
 
     def parse_link(self, response):
+        print(f"Parse Response : {response.meta}")
         full_link = 'https://myrepublica.nagariknetwork.com'
 
         links = response.xpath(
@@ -55,9 +57,16 @@ class Myrepublica_Scrapper(scrapy.Spider):
             next_page = response.xpath(self.next_page_xpath).extract_first()
             if next_page:
                 yield response.follow(next_page, self.parse_link)
-            yield scrapy.Request(url=link, callback=self.parse_article, meta={'link': link, 'category': response.meta['category']})
+
+            if 'category' in response.meta:
+                yield scrapy.Request(url=link, callback=self.parse_article, meta={'link': link, 'category': response.meta['category']})
+
+            else:
+                response.meta['category'] = Standard_Category.OTHERS
+                yield scrapy.Request(url=link, callback=self.parse_article, meta={'link': link, 'category': response.meta['category']})
 
     def parse_article(self, response):
+        print(f"Response URL :: {response.url}, {response.meta}")
         image = response.xpath(self.imagepath).get()
         if (image == None):
             image = response.xpath(self.alt_imagepath).get()

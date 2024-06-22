@@ -1,7 +1,7 @@
 def article_data(self, response):
     try:
         url = response.url or response.meta['link']
-        category = response.meta['category']
+        category = response.meta['category'] or None
         title = response.xpath(self.title_xpath).extract_first().strip()
         img_src = response.xpath(self.image_xpath).get()
         descriptions = response.xpath(self.description_xpath).getall()

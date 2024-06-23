@@ -4,9 +4,23 @@ from scrapy.utils.reactor import install_reactor
 from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
+import logging
+
 
 class AnnapurnaScraper(scrapy.Spider):
     name = "Annapurna"
+
+    custom_settings = {
+        'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'LOG_LEVEL': logging.DEBUG,
+        'ROBOTSTXT_OBEY': False,
+        'DOWNLOAD_DELAY': 1,
+        'AUTOTHROTTLE_ENABLED': True,
+        'AUTOTHROTTLE_START_DELAY': 1,
+        'AUTOTHROTTLE_MAX_DELAY': 60,
+        'AUTOTHROTTLE_TARGET_CONCURRENCY': 1.0,
+        'AUTOTHROTTLE_DEBUG': True,
+    }
 
     def __init__(self):
         self.articlelink_xpath = '//div[@class="category__news"]/div[@class="custom-container"]/div[@class="category__news-grid"]'
@@ -44,52 +58,47 @@ class AnnapurnaScraper(scrapy.Spider):
         for category in self.categories:
             link = self.categories[category]
             print(link)
-            try: 
+            try:
                 yield scrapy.Request(url=self.categories[category], callback=self.parse, meta={'category': category})
-                
+
             except Exception as e:
                 print(f"Error:{e}")
                 continue
 
     def parse(self, response):
-        print(response.url)
-        print(f"h-----------fbd------------cjv------------nhn-------------------------dcn------------------------------")
-    #     articles = response.xpath(self.articles_xpath)
-    #     print(f'{articles}')
-    #     for article in articles.xpath(self.article_xpath):
-    #         image_link = article.xpath(self.image_xpath).get().strip()
-    #         title = article.xpath(self.title_xpath).get().strip()
-    #         get_link = article.xpath(self.article_link_xpath).get()
-    #         link = f"https://www.annapurnapost.com{get_link}"
-    #         yield scrapy.Request(url=link, callback=self.parse_article, meta={'title': title, 'link': link, 'img_link': image_link, 'category': response.meta['category']})
-            
+        articles = response.xpath(self.articlelink_xpath)
+        for article in articles.xpath(self.article_xpath):
+            image_link = article.xpath(self.image_xpath).get().strip()
+            title = article.xpath(self.title_xpath).get().strip()
+            get_link = article.xpath(self.article_link_xpath).get()
+            link = f"https://www.annapurnapost.com{get_link}"
+            yield scrapy.Request(url=link, callback=self.parse_article, meta={'title': title, 'link': link, 'img_link': image_link, 'category': response.meta['category']})
 
-    # def parse_article(self, response):
-    #     title = response.meta['title']
-    #     link = response.meta['link']
-    #     img_src = response.meta['img_link']
-    #     category = response.meta['category']
-    #     main_section = response.xpath(self.main_section_xpath)
-    #     description_elements = main_section.xpath(self.description_xpath)
-    #     description = ""
-    #     for item in description_elements:
-    #         description = description + item.get().strip() + "\n"
+    def parse_article(self, response):
+        title = response.meta['title']
+        link = response.meta['link']
+        img_src = response.meta['img_link']
+        category = response.meta['category']
+        main_section = response.xpath(self.main_section_xpath)
+        description_elements = main_section.xpath(self.description_xpath)
+        description = ""
+        for item in description_elements:
+            description = description + item.get().strip() + "\n"
 
-    #     description = description.strip()
-    #     content = Utils.word_60(description)
-    #     date = main_section.xpath(self.date_xpath).get()
-    #     published_date = Utils.annapurnapost_datetime(date)
+        description = description.strip()
+        content = Utils.word_60(description)
+        date = main_section.xpath(self.date_xpath).get()
+        published_date = Utils.annapurnapost_datetime(date)
 
-    #     news = {
-    #         'title':title,
-    #         'content_description':content,
-    #         'published_date':published_date,
-    #         'image_url':img_src,
-    #         'url':link,
-    #         'category_name':category,
-    #         'is_recent':True,
-    #         'source_name':'annapurnapost'
-    #         }
+        news = {
+            'title': title,
+            'content_description': content,
+            'published_date': published_date,
+            'image_url': img_src,
+            'url': link,
+            'category_name': category,
+            'is_recent': True,
+            'source_name': 'annapurnapost'
+        }
 
-    #     PostNews.postnews(news)
-    #     print(f"---------------category_name: {category},---------------------")
+        PostNews.postnews(news)

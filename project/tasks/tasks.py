@@ -47,11 +47,11 @@ spiders = [
     # gorkhapatra.GorkhaPatraOnlineScrapper,
     # RatopatiEnglish.EnglishRatopatiScrapper,
     # saralpatrika.saralpatrika_scrapper,   #saral patrika chalena
-    # techlekh.techlekh_scrapper,
+    techlekh.techlekh_scrapper,
     # arthasarokar.arthasarokar_scrapper, #date issue
     # himalkhabar.himalkhabar_scrapper,
     # nayapage.nayapage_scrapper,
-    lokantar.lokantar_scrapper,
+    # lokantar.lokantar_scrapper,
     # corporatenepal.corporatenepal_scrapper,  # not working
     # eadarshsamaj.eadarsha_scrapper,
     # janaastha.janaastha_scrapper,

@@ -17,32 +17,33 @@ class NagarikScraper(scrapy.Spider):
         self.date_xpath = '//div[@class="byline mb-5"]/time/text()'
         self.desc_xpath = '//article/p/text()'
         self.img_xpath = '(//div[contains(@class,"image")]/img)[1]'
+        self.img_xpath2 = '(//div[contains(@class,"figure")]/img)[1]'
         self.outer_date_xpath = "//time[contains(@class,'npdate')]/@data-pdate"
         self.dates = []
         self.links = []
         self.today_date = datetime.today().strftime('%Y-%m-%d')
 
         self.categories = {
-            # Standard_Category.POLITICS: r'https://nagariknews.nagariknetwork.com/politics',
-            # Standard_Category.SOCIETY: r'https://nagariknews.nagariknetwork.com/social-affairs',
-            # Standard_Category.ECONOMY: r'https://nagariknews.nagariknetwork.com/economy',
-            # Standard_Category.ART: r'https://nagariknews.nagariknetwork.com/arts',
-            # Standard_Category.OPINION: r'https://nagariknews.nagariknetwork.com/opinion',
-            # Standard_Category.TRAVEL: r'https://nagariknews.nagariknetwork.com/tag/ghumfir',
-            # Standard_Category.SPORTS: r'https://nagariknews.nagariknetwork.com/sports',
-            # Standard_Category.EDUCATION: r'https://nagariknews.nagariknetwork.com/education',
-            # Standard_Category.SCIENCE_AND_TECHNOLOGY: r'https://nagariknews.nagariknetwork.com/technology',
-            # Standard_Category.INTERNATIONAL: r'https://nagariknews.nagariknetwork.com/international',
+            Standard_Category.POLITICS: r'https://nagariknews.nagariknetwork.com/politics',
+            Standard_Category.SOCIETY: r'https://nagariknews.nagariknetwork.com/social-affairs',
+            Standard_Category.ECONOMY: r'https://nagariknews.nagariknetwork.com/economy',
+            Standard_Category.ART: r'https://nagariknews.nagariknetwork.com/arts',
+            Standard_Category.OPINION: r'https://nagariknews.nagariknetwork.com/opinion',
+            Standard_Category.TRAVEL: r'https://nagariknews.nagariknetwork.com/tag/ghumfir',
+            Standard_Category.SPORTS: r'https://nagariknews.nagariknetwork.com/sports',
+            Standard_Category.EDUCATION: r'https://nagariknews.nagariknetwork.com/education',
+            Standard_Category.SCIENCE_AND_TECHNOLOGY: r'https://nagariknews.nagariknetwork.com/technology',
+            Standard_Category.INTERNATIONAL: r'https://nagariknews.nagariknetwork.com/international',
             Standard_Category.HEALTH: r'https://nagariknews.nagariknetwork.com/health',
             Standard_Category.OTHERS: [
                 r'https://nagariknews.nagariknetwork.com/tag/biwidh',
-                # r'https://nagariknews.nagariknetwork.com/others',
-                # r'https://nagariknews.nagariknetwork.com/blog',
-                # r'https://nagariknews.nagariknetwork.com/nagarik-khoj',
-                # r'https://nagariknews.nagariknetwork.com/interview',
-                # r'https://nagariknews.nagariknetwork.com/diaspora',
-                # r'https://nagariknews.nagariknetwork.com/photo-feature',
-                # r'https://nagariknews.nagariknetwork.com/interview',
+                r'https://nagariknews.nagariknetwork.com/others',
+                r'https://nagariknews.nagariknetwork.com/blog',
+                r'https://nagariknews.nagariknetwork.com/nagarik-khoj',
+                r'https://nagariknews.nagariknetwork.com/interview',
+                r'https://nagariknews.nagariknetwork.com/diaspora',
+                r'https://nagariknews.nagariknetwork.com/photo-feature',
+                r'https://nagariknews.nagariknetwork.com/interview',
             ]
         }
 
@@ -79,14 +80,18 @@ class NagarikScraper(scrapy.Spider):
         for link, date in zip(self.links, self.dates):
             if date != self.today_date:
                 break
-            print(f"Actually link :: {link}")
             yield scrapy.Request(url=link, callback=self.parse_article, meta={'link': link, 'category': response.meta["category"]})
 
     def parse_article(self, response):
         category = response.meta['category']
         title = response.xpath(self.title_xpath).get().strip()
         link = response.meta['link']
-        img_src = response.xpath(self.img_xpath).attrib['src']
+
+        try:
+            img_src = response.xpath(self.img_xpath).attrib['src']
+        except:
+            img_src = response.xpath(self.img_xpath2).attrib['src']
+
         all = response.xpath(self.desc_xpath).getall()
         desc = ''.join(all)
         description = Utils.word_60(desc)
@@ -103,4 +108,5 @@ class NagarikScraper(scrapy.Spider):
             'is_recent': True,
             'source_name': 'nagariknews'
         }
+
         PostNews.postnews(news)

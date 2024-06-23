@@ -328,6 +328,20 @@ def himalkhabar_conversion(date):
     return formatted_date
 
 
+def bizmandu_datetime(ndate):
+    date_string = ndate
+    date_parts = date_string.split(" ")
+    nepali_day = int(date_parts[2].strip(','))
+    nepali_month = nepali_month_mapping[date_parts[1]]
+    nepali_year = int(date_parts[0].strip(','))
+
+    formatted_date = f"{nepali_month:02d} {nepali_day:02d} {nepali_year}"
+    dateobject = datetime.strptime(formatted_date, "%m %d %Y")
+    formatted_date = dateobject.strftime('%Y-%m-%d')
+
+    return str(formatted_date)
+
+
 def lokaantar_conversion(date):
     date_string = date
     date_parts = date_string.split(" ")
@@ -353,6 +367,7 @@ def setopati_datetime_parser(nepali_date):
     english_date = date_object.to_datetime_date()
     formatted_datetime = english_date.strftime("%Y-%m-%d")
     return formatted_datetime
+
 
 def get_report_file_path():
     return os.path.join(os.getcwd(), 'output', f'Status-Report-{datetime.today().now().date()}.csv')

@@ -35,7 +35,7 @@ app.conf.beat_schedule = {
 
 spiders = [
     # Annapurna.AnnapurnaScraper,
-    Myrepublica.Myrepublica_Scrapper,
+    # Myrepublica.Myrepublica_Scrapper,
     # eKantipur.EKantipur_Scrapper,
     # Nagarik.NagarikScraper,
     # kathmanduPost.KathmanduPost_Scrapper,
@@ -49,9 +49,10 @@ spiders = [
     # arthasarokar.arthasarokar_scrapper, #date issue
     # himalkhabar.himalkhabar_scrapper,
     # nayapage.nayapage_scrapper,
+    
     # lokantar.lokantar_scrapper,
     # corporatenepal.corporatenepal_scrapper,  # not working
-    # eadarshsamaj.eadarsha_scrapper,
+    eadarshsamaj.eadarsha_scrapper,
     # janaastha.janaastha_scrapper,
     # khabarhub.khabarhub_scrapper,
     # reportersnepal.reportersnepal_scrapper, # chaleko chhaina

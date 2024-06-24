@@ -28,14 +28,22 @@ class eadarsha_scrapper(scrapy.Spider):
             Standard_Category.SPORTS: r'https://www.eadarsha.com/sports/',
             Standard_Category.TRAVEL: r'https://www.eadarsha.com/nep/category/news/tourism/',
             Standard_Category.ART: r'https://www.eadarsha.com/nep/category/news/arts/',
-            Standard_Category.OTHERS: r'https://www.eadarsha.com/nep/editorial/',
-            Standard_Category.OTHERS: r'https://www.eadarsha.com/nep/photo_gallery/'
+            Standard_Category.OTHERS:[ r'https://www.eadarsha.com/nep/editorial/', r'https://www.eadarsha.com/nep/photo_gallery/']
         }
 
     def start_requests(self):
         for category in self.categories:
+        
             try:
-                yield scrapy.Request(url=self.categories[category], callback=self.parse, meta={'category': category})
+                # print(f"Category: {category}")
+                if category == 'others':
+                    for category in Standard_Category.OTHERS:
+                        yield scrapy.Request(url=self.categories[Standard_Category.OTHERS], callback=self.parse, meta={'category': category})
+                        print(f"Category:{category}")
+                        
+                else:
+                 yield scrapy.Request(url=self.categories[category], callback=self.parse, meta={'category': category})
+
             except Exception as e:
                 print(f"Error:{e}")
                 continue
@@ -45,6 +53,8 @@ class eadarsha_scrapper(scrapy.Spider):
             links = response.xpath(self.articlelink_path_sports).getall()
         else:
             links = response.xpath(self.articlelink_path).getall()
+        print(f"Links:{links}")
+
 
         for link in links:
             yield scrapy.Request(url=response.urljoin(link), callback=self.parse_article, meta={'category': response.meta['category']})
@@ -56,4 +66,8 @@ class eadarsha_scrapper(scrapy.Spider):
         else:
             self.formattedDate = Utils.eAdarsha_conversion(date)
         news_obj = article_data(self, response)
+
+    
+        # check news object has none key values, if exists print message else
+
         PostNews.postnews(news_obj)

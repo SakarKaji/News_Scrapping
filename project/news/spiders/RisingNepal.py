@@ -59,7 +59,7 @@ class barakhari_scrapper(scrapy.Spider):
         content = Utils.word_60(desc)
         img_src = response.xpath(self.image_xpath).get()
         date = response.xpath(self.date_xpath).get()
-        formattedDate = Utils.baahrakhari_conversion(date)
+        formattedDate = Utils.(date)
 
         news = {
             'title':title.strip(),

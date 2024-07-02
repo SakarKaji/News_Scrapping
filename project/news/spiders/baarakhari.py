@@ -71,8 +71,8 @@ class barakhari_scrapper(scrapy.Spider):
             'url':url,
             'category_name':category,
             'is_recent':True,
-            'source_name':'Barakhari'
+            'source_name':'RisingNepal'
             }
         PostNews.postnews(news)
 
-        
+

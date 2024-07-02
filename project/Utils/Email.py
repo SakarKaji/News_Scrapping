@@ -14,6 +14,8 @@ def Report_Email():
     fromaddr = os.getenv('FROM_ADDR')
     password = os.getenv('PASSWORD')
     toaddrs = ['bishalfox@yopmail.com']
+    # toaddrs = ['bishalfox@yopmail.com','sakarquickfox@yopmail.com', 'pallav@quickfoxconsulting.com']
+    # toaddrs = ['sakarquickfox@yopmail.com']
 
     if not fromaddr or not password:
         print("Error: FROM_ADDR and PASSWORD must be set in the .env file")

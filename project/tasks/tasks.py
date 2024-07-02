@@ -15,7 +15,7 @@ from news.spiders import (
     arthasarokar, arthikabiyan, aajakokhabar, himalkhabar, nayapage,
     lokantar, corporatenepal, eadarshsamaj, janaastha, khabarhub,
     bizmandu, baarakhari, setopati, bbcNepali, news24, onlinekhabarEnglish,
-    onlinemajdur, thakhabar, merolagani,
+    onlinemajdur, thakhabar, merolagani
 )
 from celery import Celery
 from celery.schedules import crontab
@@ -35,41 +35,42 @@ app.conf.beat_schedule = {
 
 spiders = [
     # Annapurna.AnnapurnaScraper,
-    # Myrepublica.Myrepublica_Scrapper,
-    # eKantipur.EKantipur_Scrapper,
-    # Nagarik.NagarikScraper,
-    # kathmanduPost.KathmanduPost_Scrapper,
-    # EverestHeadlines.EverestHeadlineScrapper,
-    # Ratopati.Ratopati_scrapper,
-    # Onlinekhabar.OnlineKhabarScrapper,
-    # gorkhapatra.GorkhaPatraOnlineScrapper,
-    # RatopatiEnglish.EnglishRatopatiScrapper,
+    Myrepublica.Myrepublica_Scrapper,
+    eKantipur.EKantipur_Scrapper,
+    Nagarik.NagarikScraper,
+    kathmanduPost.KathmanduPost_Scrapper,
+    EverestHeadlines.EverestHeadlineScrapper,
+    Ratopati.Ratopati_scrapper,
+    Onlinekhabar.OnlineKhabarScrapper,
+    gorkhapatra.GorkhaPatraOnlineScrapper,
+    RatopatiEnglish.EnglishRatopatiScrapper,
     # saralpatrika.saralpatrika_scrapper,   #saral patrika chalena
-    # techlekh.techlekh_scrapper,
+    techlekh.techlekh_scrapper,
     # arthasarokar.arthasarokar_scrapper, #date issue
-    # himalkhabar.himalkhabar_scrapper,
-    # nayapage.nayapage_scrapper,
+    himalkhabar.himalkhabar_scrapper,
+    nayapage.nayapage_scrapper,
     
-    # lokantar.lokantar_scrapper,
+    lokantar.lokantar_scrapper,
     # corporatenepal.corporatenepal_scrapper,  # not working
     eadarshsamaj.eadarsha_scrapper,
-    # janaastha.janaastha_scrapper,
-    # khabarhub.khabarhub_scrapper,
+    janaastha.janaastha_scrapper,
+    khabarhub.khabarhub_scrapper,
     # reportersnepal.reportersnepal_scrapper, # chaleko chhaina
-    # aajakokhabar.aajakokhabar_scrapper,
-    # arthikabiyan.arthikabiyan_scrapper,
-    # bizmandu.bizamandu_scrapper,
-    # baarakhari.barakhari_scrapper,
-    # setopati.Setopati_Scrapper,
+    aajakokhabar.aajakokhabar_scrapper,
+    arthikabiyan.arthikabiyan_scrapper,
+    bizmandu.bizamandu_scrapper,
+    baarakhari.barakhari_scrapper,
+    setopati.Setopati_Scrapper,
 
-    # bbcNepali.bbcNepali_scrapper,
+    bbcNepali.bbcNepali_scrapper,
     # news24.News24Scrapper,  #someproblem
 
-    # onlinekhabarEnglish.OnlinekhabarEnglish_scrapper,
-    # onlinemajdur.Onlinemajdur_scarpper,
-    # thakhabar.Thakhabar_scrapper,
-    # rajdhani.rajdhanidaily_scrapper,
-    # merolagani.Merolagani_scrapper
+    onlinekhabarEnglish.OnlinekhabarEnglish_scrapper,
+    onlinemajdur.Onlinemajdur_scarpper,
+    thakhabar.Thakhabar_scrapper,
+    rajdhani.rajdhanidaily_scrapper,
+    merolagani.Merolagani_scrapper
+    # setopatiEnglish.setopatiEnglish
 
 ]
 #  hamrokhelkud.hamrokhelkud_scrapper,

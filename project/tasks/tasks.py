@@ -116,10 +116,10 @@ def run_spider(url=""):
         crawler = UrlCrawlerScript(spider)
         crawler.start()
         crawler.join()
-    sent = Email.Report_Email()
+    # sent = Email.Report_Email()
 
-    if sent:
-        Utils.delete_report_file()
+    # if sent:
+    #     Utils.delete_report_file()
 
 
 @app.task(name='news_scrapper-1')

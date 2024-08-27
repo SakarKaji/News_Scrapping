@@ -122,7 +122,6 @@ def run_spider(url=""):
     # if sent:
     #     Utils.delete_report_file()
 
-
-@app.task(name='news_scrapper-1')
+@app.task(name='run_scraper')
 def crawl():
     return run_spider()

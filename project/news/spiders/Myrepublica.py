@@ -8,9 +8,7 @@ from datetime import datetime
 class Myrepublica_Scrapper(scrapy.Spider):
     name = 'Myrepublica'
 
-    def __init__(self, name: str | None = None, **kwargs: any):
-        super().__init__(name, **kwargs)
-
+    def __init__(self):
         self.start_urls = ['https://myrepublica.nagariknetwork.com/']
         self.navpath = '//ul[@class="nav navbar-nav"]/li'
         self.titlePath = '//div[@class="main-heading"]/h2/text()'

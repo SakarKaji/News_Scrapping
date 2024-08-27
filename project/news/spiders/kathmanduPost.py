@@ -9,9 +9,7 @@ from news.article_object import article_data
 class KathmanduPost_Scrapper(scrapy.Spider):
     name = "KathmanduPost"
 
-    def __init__(self, name: str | None = None, **kwargs: any):
-        super().__init__(name, **kwargs)
-
+    def __init__(self):
         self.articlelink_xpath = 'https://kathmandupost.com'
         self.title_xpath = '//h1[@style]/text()'
         self.date_xpath = '//div[@class="updated-time"]/text()'

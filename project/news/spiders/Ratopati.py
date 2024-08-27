@@ -10,8 +10,7 @@ from Utils.Email import error_report_email
 class Ratopati_scrapper(scrapy.Spider):
     name = "Ratopati Nepali"
 
-    def __init__(self, name: str | None = None, **kwargs: any):
-        super().__init__(name, **kwargs)
+    def __init__(self):
         self.articlelink_xpath = 'https://www.ratopati.com/'
         self.navPath = '//nav/div/div/div[1]/ul/li'
         self.articles_path = '//div[contains(@class,"columnnews mbl-col col3")]/a/@href'

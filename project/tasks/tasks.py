@@ -1,6 +1,5 @@
 from celery.app import shared_task
 from celery.app.base import Celery
-<<<<<<< HEAD
 from scrapy.crawler import CrawlerProcess
 from scrapy import settings
 # from scrapy import log, project, signals
@@ -16,26 +15,11 @@ from news.spiders import (
     bizmandu, baarakhari, setopati, bbcNepali, news24, onlinekhabarEnglish,
     onlinemajdur, thakhabar, merolagani
 )
-=======
->>>>>>> 6a8c1cc5e8d32e6027229644030fa63fc97cccba
 from celery import Celery
 from celery.schedules import crontab
 
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
-
-from billiard import Process
-from news.spiders import (
-    EverestHeadlines, saralpatrika, Annapurna, Myrepublica,
-    eKantipur, Nagarik, kathmanduPost, Ratopati,
-    RatopatiEnglish, rajdhani, reportersnepal, Onlinekhabar,
-    gorkhapatra, techlekh, arthasarokar, arthikabiyan,
-    aajakokhabar, himalkhabar, nayapage, lokantar,
-    corporatenepal, eadarshsamaj, janaastha, khabarhub,
-    bizmandu, baarakhari, setopati, bbcNepali,
-    news24, onlinekhabarEnglish, onlinemajdur, thakhabar, merolagani,
-    hamrokhelkud
-)
 
 from Utils import Email
 from Utils import Utils

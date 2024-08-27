@@ -72,7 +72,9 @@ class EKantipur_Scrapper(scrapy.Spider):
         }
         category_name = category_mapping[category]
         response.meta["category"] = category_name
+        
         date = response.xpath(self.date_xpath).get()
         self.formattedDate = Utils.ekantipur_conversion(date)
+
         news_obj = article_data(self, response)
         PostNews.postnews(news_obj)

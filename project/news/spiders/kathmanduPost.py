@@ -50,7 +50,7 @@ class KathmanduPost_Scrapper(scrapy.Spider):
             break_url = link.split('/')
             new_date = break_url[4:7]
             date = '-'.join(new_date)
-            if date == self .today_date:
+            if date == self.today_date:
                 yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
 
     def parse_article(self, response):

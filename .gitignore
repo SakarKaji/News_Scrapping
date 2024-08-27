@@ -1,2 +1,4 @@
 project/venv
 /venv
+/project/output
+path_content_finder.py

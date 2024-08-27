@@ -1,5 +1,3 @@
-from Utils import Utils
-
 def article_data(self, response):
     try:
         url = response.url
@@ -15,12 +13,12 @@ def article_data(self, response):
             'published_date': self.formattedDate,
             'image_url': img_src,
             'url': url,
-            'category_name': category,
+            'category': category,
             'is_recent': True,
-            'source_name': self.article_source,
+            'source': self.article_source,
         }
         return news
-    
+
     except Exception as e:
         print(f"error received in {e}")
         

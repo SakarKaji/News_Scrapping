@@ -1,3 +1,5 @@
+import os
+
 from celery.app import shared_task
 from celery.app.base import Celery
 from scrapy.crawler import CrawlerProcess
@@ -24,16 +26,28 @@ from scrapy.utils.project import get_project_settings
 from Utils import Email
 from Utils import Utils
 
-# from twisted.internet import reactor
+from dotenv import load_dotenv
 
+# Load environment variables
+load_dotenv()
 
-app = Celery('tasks', broker='redis://localhost:6379')
+# Celery application setup
+app = Celery('tasks', broker=os.environ.get("NEWS_REDIS_URL"))
 app.config_from_object('celeryconfig')
 
+# Cron interval from environment
+CRON_INTERVAL = os.environ.get("CRON_JOB_INTERVAL")
+
+try:
+    CRON_INTERVAL = int(CRON_INTERVAL)  # Convert to integer
+except ValueError:
+    raise ValueError("CRON_JOB_INTERVAL must be a valid integer.")
+
+# Celery beat schedule for periodic task
 app.conf.beat_schedule = {
-    "task-news_scrapper-1": {
-        "task": "news_scrapper-1",
-        "schedule": crontab(minute="*/2"),
+    "task-run_scraper": {
+        "task": "run_scraper",
+        "schedule": crontab(minute=f"*/{CRON_INTERVAL}"),
     },
 }
 
@@ -53,7 +67,7 @@ spiders = [
     # arthasarokar.arthasarokar_scrapper, #date issue
     himalkhabar.himalkhabar_scrapper,
     nayapage.nayapage_scrapper,
-    
+
     lokantar.lokantar_scrapper,
     # corporatenepal.corporatenepal_scrapper,  # not working
     eadarshsamaj.eadarsha_scrapper,

@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - stage-dev
+      - dev
 
 jobs:
   build-celery-test:

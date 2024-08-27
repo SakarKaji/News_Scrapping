@@ -8,9 +8,8 @@ from Utils import PostNews
 class AnnapurnaScraper(scrapy.Spider):
     name = "Annapurna"
 
-    # install_reactor("twisted.internet.asyncioreactor.AsyncioSelectorReactor")
     def __init__(self):
-        self.articles_xpath = '//div[@class="category__news"]/div[@class="custom-container"]/div[@class="category__news-grid"]'
+        self.articlelink_xpath = '//div[@class="category__news"]/div[@class="custom-container"]/div[@class="category__news-grid"]'
         self.article_xpath = './/div[@class="grid__card"]'
         self.image_xpath = './/div[@class="card__img"]/a/img/@src'
         self.title_xpath = './/div[@class="card__details"]/h3/a/text()'

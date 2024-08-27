@@ -43,6 +43,7 @@ try:
 except ValueError:
     raise ValueError("CRON_JOB_INTERVAL must be a valid integer.")
 
+
 # Celery beat schedule for periodic task
 app.conf.beat_schedule = {
     "task-run_scraper": {

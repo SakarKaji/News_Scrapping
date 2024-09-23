@@ -15,7 +15,7 @@ from news.spiders import (
     arthasarokar, arthikabiyan, aajakokhabar, himalkhabar, nayapage,
     lokantar, corporatenepal, eadarshsamaj, janaastha, khabarhub,
     bizmandu, baarakhari, setopati, bbcNepali, news24, onlinekhabarEnglish,
-    onlinemajdur, thakhabar, merolagani
+    onlinemajdur, thakhabar, merolagani, ictsamachar
 )
 from celery import Celery
 from celery.schedules import crontab
@@ -88,7 +88,9 @@ spiders = [
     onlinemajdur.Onlinemajdur_scarpper,
     thakhabar.Thakhabar_scrapper,
     rajdhani.rajdhanidaily_scrapper,
-    merolagani.Merolagani_scrapper
+    merolagani.Merolagani_scrapper,
+    ictsamachar.ictsamachar_scrapper,
+
     # setopatiEnglish.setopatiEnglish
 
 ]

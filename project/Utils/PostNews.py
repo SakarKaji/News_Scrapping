@@ -94,4 +94,22 @@ def postnews(content: json = None):
                         headers=headers)
 
     logging.info(f"Response :: {res}")
+
+    if content["source"]=="ictsamachar":
+        
+        news = {
+                'title':content["title"],
+                'content_description': content["content_description"],
+                'published_date':content["published_date"],
+                'image_url':content["image_url"],
+                'url':content["url"],
+                'category_name':content["category"],
+                'is_recent':content["is_recent"],
+                'source_name':content["source"]
+                }
+
+        res = requests.post(content_url="http://18.191.241.247/api/v1/bot/content",
+            json=news,
+            headers=headers)
+            
     return

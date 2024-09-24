@@ -95,7 +95,7 @@ def postnews(content: json = None):
 
     logging.info(f"Response :: {res}")
 
-    if content["source"]=="ictsamachar":
+    if content["source"] in ["ictsamachar"]:
         
         news = {
                 'title':content["title"],
@@ -111,5 +111,5 @@ def postnews(content: json = None):
         res = requests.post(content_url="http://18.191.241.247/api/v1/bot/content",
             json=news,
             headers=headers)
-            
+
     return

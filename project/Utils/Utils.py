@@ -368,6 +368,20 @@ def setopati_datetime_parser(nepali_date):
     formatted_datetime = english_date.strftime("%Y-%m-%d")
     return formatted_datetime
 
+def ictsamachar(date_string:str):
+    date_parts = date_string.split(',')
+    nepali_day_month_strip = date_parts[1].strip()
+    nepali_day_month_split = nepali_day_month_strip.split(' ')
+    nepali_day = int(nepali_day_month_split[0])
+    nepali_month = int(nepali_month_mapping[nepali_day_month_split[1]])
+    nepali_year = int(date_parts[2])
+    formatted_nepali_date = f"{nepali_month:02d} {nepali_day:02d} {nepali_year}"
+    date_object = nepali_datetime.datetime.strptime(formatted_nepali_date, "%m %d %Y")
+    english_date = date_object.to_datetime_date()
+    formatted_english_date = english_date.strftime("%Y-%m-%d")
+
+    return str(formatted_nepali_date)
+
 
 def get_report_file_path():
     return os.path.join(os.getcwd(), 'output', f'Status-Report-{datetime.today().now().date()}.csv')

@@ -7,7 +7,7 @@ class SetopatiEnglish_Scrapper(scrapy.Spider):
     name = "setopati"
 
     def __init__(self):
-   self.articles_xpath = '//*[@id="content"]/div/section/div/div/a/@href'
+        self.articles_xpath = '//*[@id="content"]/div/section/div/div/a/@href'
         self.description_xpath = "//*[@id='content']/div/div/aside/div[1]/div/div[1]/p/text()"
         self.title_xpath = "//*[@id='content']/div/section/div[1]/span/text()"
         self.image_xpath = '//div[@class="featured-images col-md-12"]/figure/img/@src'

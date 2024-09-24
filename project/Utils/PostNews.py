@@ -89,9 +89,7 @@ def postnews(content: json = None):
         'Content-Type': 'application/json'
     }
 
-    res = requests.post(content_url,
-                        json=content,
-                        headers=headers)
+    res = requests.post(content_url,json=content,headers=headers)
 
     logging.info(f"Response :: {res}")
 
@@ -108,8 +106,6 @@ def postnews(content: json = None):
                 'source_name':content["source"]
                 }
 
-        res = requests.post(content_url="http://18.191.241.247/api/v1/bot/content",
-            json=news,
-            headers=headers)
+        res = requests.post(content_url,json=news)
 
     return

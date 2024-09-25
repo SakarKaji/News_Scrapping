@@ -4,6 +4,7 @@ from .Utils import *
 import pandas as pd
 import logging
 import os
+from news.id_mapping import id_for
 
 # content_url = 'http://3.16.15.203/api/v1/bot/content'
 
@@ -89,23 +90,27 @@ def postnews(content: json = None):
         'Content-Type': 'application/json'
     }
 
-    res = requests.post(content_url,json=content,headers=headers)
+    # res = requests.post(content_url,json=content,headers=headers)
 
-    logging.info(f"Response :: {res}")
+    # logging.info(f"Response :: {res}")
+
 
     if content["source"] in ["ictsamachar"]:
-        
         news = {
-                'title':content["title"],
+                'title': content["title"],
                 'content_description': content["content_description"],
-                'published_date':content["published_date"],
-                'image_url':content["image_url"],
-                'url':content["url"],
-                'category_name':content["category"],
-                'is_recent':content["is_recent"],
-                'source_name':content["source"]
+                'published_date': content["published_date"],
+                'image_url': content["image_url"],
+                'url': content["url"],
+                'category_name': content["category"],
+                'is_recent': content["is_recent"],
+                'source_id': id_for[content["source"]],
+                'is_trending': True
                 }
-
-        res = requests.post(content_url,json=news)
-
+        logging.info(f"Production news :: {news}")
+        if news["content_description"]:
+            res = requests.post(url="http://3.13.147.29/api/v1/bot/content",
+                json=news,
+                headers=headers)
+            logging.info(f"Response :: {res}")
     return

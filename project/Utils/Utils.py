@@ -380,7 +380,7 @@ def ictsamachar(date_string:str):
     english_date = date_object.to_datetime_date()
     formatted_english_date = english_date.strftime("%Y-%m-%d")
 
-    return str(formatted_nepali_date)
+    return str(formatted_english_date)
 
 
 def get_report_file_path():

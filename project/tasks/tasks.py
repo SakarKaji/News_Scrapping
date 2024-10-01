@@ -53,16 +53,16 @@ app.conf.beat_schedule = {
 }
 
 spiders = [
-    Annapurna.AnnapurnaScraper,
-    # Myrepublica.Myrepublica_Scrapper,
-    # eKantipur.EKantipur_Scrapper,
-    # Nagarik.NagarikScraper,
-    # kathmanduPost.KathmanduPost_Scrapper,
-    # EverestHeadlines.EverestHeadlineScrapper,
-    # Ratopati.Ratopati_scrapper,
-    # Onlinekhabar.OnlineKhabarScrapper,
-    # gorkhapatra.GorkhaPatraOnlineScrapper,
-    # RatopatiEnglish.EnglishRatopatiScrapper,
+    # Annapurna.AnnapurnaScraper,
+    Myrepublica.Myrepublica_Scrapper,
+    eKantipur.EKantipur_Scrapper,
+    Nagarik.NagarikScraper,
+    kathmanduPost.KathmanduPost_Scrapper,
+    EverestHeadlines.EverestHeadlineScrapper,
+    Ratopati.Ratopati_scrapper,
+    Onlinekhabar.OnlineKhabarScrapper,
+    gorkhapatra.GorkhaPatraOnlineScrapper,
+    RatopatiEnglish.EnglishRatopatiScrapper,
     # saralpatrika.saralpatrika_scrapper,   #saral patrika chalena
     techlekh.techlekh_scrapper,
     # arthasarokar.arthasarokar_scrapper, #date issue

@@ -382,6 +382,18 @@ def ictsamachar(date_string:str):
 
     return str(formatted_english_date)
 
+def timesofindia_datetime(date_str):
+    '''
+    Returns date in full month name format
+    
+    Example:
+    Given input: Dec 14, 2024 (str)
+    Returns: December 14, 2024 (str)
+    '''
+    date_object = datetime.strptime(date_str, '%b %d, %Y')
+    full_date = date_object.strftime('%B %d, %Y')
+    return full_date
+
 
 def get_report_file_path():
     return os.path.join(os.getcwd(), 'output', f'Status-Report-{datetime.today().now().date()}.csv')

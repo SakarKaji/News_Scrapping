@@ -5,5 +5,3 @@ Scrapy==2.11.1
 redis==5.0.2
 pandas==2.2.2
 python-dotenv==1.0.1
-scrapy-playwright==0.0.41
-playwright==1.47.0

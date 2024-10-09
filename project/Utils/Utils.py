@@ -379,9 +379,19 @@ def ictsamachar(date_string:str):
     date_object = nepali_datetime.datetime.strptime(formatted_nepali_date, "%m %d %Y")
     english_date = date_object.to_datetime_date()
     formatted_english_date = english_date.strftime("%Y-%m-%d")
-
     return str(formatted_english_date)
 
+def navbharattimes_datetime(date_str):
+    '''
+    Returns date in full month name format
+    
+    Example:
+    Given input: 14 Sep 2024 (str)
+    Returns: September 14, 2024 (str)
+    '''
+    date_object = datetime.strptime(date_str, '%d %b %Y')
+    full_date = date_object.strftime('%B %d, %Y')
+    return full_date
 
 def get_report_file_path():
     return os.path.join(os.getcwd(), 'output', f'Status-Report-{datetime.today().now().date()}.csv')

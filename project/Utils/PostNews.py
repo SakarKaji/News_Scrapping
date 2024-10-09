@@ -114,3 +114,15 @@ def postnews(content: json = None):
                 headers=headers)
             logging.info(f"Response :: {res}")
     return
+
+
+def postnews_server(content: json = None):
+    headers = {
+        # 'Authorization': f'Bearer {bearer_token}',
+        'Content-Type': 'application/json'
+    }
+    res = requests.post("http://3.13.147.29/api/v1/bot/content",
+                        json=content,
+                        headers=headers)
+    logging.info(f"Response :: {res}")
+    return

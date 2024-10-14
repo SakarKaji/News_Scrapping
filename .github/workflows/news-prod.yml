@@ -54,7 +54,7 @@ jobs:
 
       - name: Set up SSH Key
         run: |
-          echo "${{ secrets.AWS_SSH_KEY }}" > /tmp/id_rsa
+          echo "${{ secrets.PROD_AWS_SSH_KEY }}" > /tmp/id_rsa
           chmod 600 /tmp/id_rsa
         shell: bash
       

@@ -80,7 +80,7 @@ class TimesOfIndia_Scrapper(scrapy.Spider):
             "is_recent": True,
             "source_id": 46
         }
-        PostNews.postnews_server(news)
+        PostNews.postnews(news)
 
     def is_recent(self, date_str, days=7) -> bool:
         """

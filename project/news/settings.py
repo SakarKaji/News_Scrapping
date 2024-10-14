@@ -1,5 +1,3 @@
-import logging
-
 BOT_NAME = "news"
 
 SPIDER_MODULES = ["news.spiders"]

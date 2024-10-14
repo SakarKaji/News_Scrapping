@@ -1,0 +1,26 @@
+FROM python:3.9
+
+# Set ARGs for build time and ENV for runtime
+ARG BACKEND_URL
+ARG NEWS_REDIS_URL
+ARG CRON_JOB_INTERVAL
+
+ENV BACKEND_URL $BACKEND_URL
+ENV NEWS_REDIS_URL $NEWS_REDIS_URL
+ENV CRON_JOB_INTERVAL $CRON_JOB_INTERVAL
+
+# Create a working directory for the application
+WORKDIR /project
+
+# Copy requirements and install dependencies
+COPY project/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code from 'project' directory into '/project'
+COPY project /project/
+
+# Set the PYTHONPATH to ensure the 'project' module is discoverable
+ENV PYTHONPATH="/project"
+
+# Run the Celery worker and beat processes
+CMD celery -A tasks.tasks worker -E --pool=solo --loglevel=info & celery -A tasks.tasks beat --loglevel=info

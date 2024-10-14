@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-celery-test:
-    name: Build and Test Celery for Scrapy News
+    name: Build Test Celery for Scrapy News
     runs-on: ubuntu-latest
     services:
       docker:
@@ -57,7 +57,7 @@ jobs:
           echo "${{ secrets.AWS_SSH_KEY }}" > /tmp/id_rsa
           chmod 600 /tmp/id_rsa
         shell: bash
-      
+
       - name: Test SSH Connection
         run: |
           ssh -vvv -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "echo 'SSH connection successful'"
@@ -65,7 +65,7 @@ jobs:
       - name: Install Docker on Remote Server
         run: |
           ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "which docker || ( sudo apt update -y && sudo apt install -y apt-transport-https ca-certificates curl software-properties-common && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - && sudo add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable' -y && sudo apt update -y && sudo apt install -y docker-ce )"
-      
+
       - name: Log in to Docker Registry on Remote Server
         run: |
           ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "echo '${{ secrets.GITHUB_TOKEN }}' | sudo docker login ghcr.io -u '${{ secrets.REMOTE_DOCKER_USERNAME }}' --password-stdin"

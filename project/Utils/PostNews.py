@@ -4,7 +4,7 @@ import logging
 import os
 
 content_url = os.environ.get("BACKEND_URL")
-bearer_token = os.environ.get("ACCESS_TOKEN")
+bearer_token = os.environ.get("CONTENT_CREATE_TOKEN")
 
 
 def postnews(content: json = None):

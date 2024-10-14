@@ -4,12 +4,12 @@ import logging
 import os
 
 content_url = os.environ.get("BACKEND_URL")
-# bearer_token = os.environ.get("ACCESS_TOKEN")
+bearer_token = os.environ.get("ACCESS_TOKEN")
 
 
 def postnews(content: json = None):
     headers = {
-        # 'Authorization': f'Bearer {bearer_token}',
+        'Authorization': f'Bearer {bearer_token}',
         'Content-Type': 'application/json'
     }
     res = requests.post(content_url, json=content, headers=headers)

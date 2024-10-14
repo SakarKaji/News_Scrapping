@@ -35,6 +35,7 @@ jobs:
             --build-arg BACKEND_URL=${{ vars.TEST_BACKEND_URL }} \
             --build-arg NEWS_REDIS_URL=${{ vars.TEST_NEWS_REDIS_URL }} \
             --build-arg CRON_JOB_INTERVAL=${{ vars.TEST_NEWS_CRON_JOB_INTERVAL }} \
+            --build-arg CONTENT_CREATE_TOKEN=${{ vars.TEST_CONTENT_CREATE_TOKEN }} \
             -t ghcr.io/quickfoxconsulting/quicksamachar_repo_django/news-celery-testing:latest .
 
       - name: Push Docker Image

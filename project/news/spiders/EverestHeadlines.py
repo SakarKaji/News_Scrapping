@@ -1,4 +1,5 @@
 import scrapy
+import re
 from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
@@ -45,4 +46,11 @@ class EverestHeadlineScrapper(scrapy.Spider):
         self.formattedDate = Utils.everestHeadlines_conversion(date)
 
         news_obj = article_data(self, response)
+        news_obj["content_description"] = news_obj["content_description"].replace(
+            '\xa0', '')
+        # Remove <p> and </p> tags along with style attributes inside <p> tags
+        news_obj["content_description"] = re.sub(
+            r'<p[^>]*>|</p>', '', news_obj["content_description"])
+        # Remove extra spaces or newlines after cleaning
+        news_obj["content_description"] = news_obj["content_description"].strip()
         PostNews.postnews(news_obj)

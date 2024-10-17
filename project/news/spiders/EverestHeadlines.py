@@ -51,7 +51,7 @@ class EverestHeadlineScrapper(scrapy.Spider):
         news_obj["content_description"] = news_obj["content_description"].replace(
             '<strong>', '')
         news_obj["content_description"] = news_obj["content_description"].replace(
-            '<s/trong>', '')
+            '</strong>', '')
         # Remove <p> and </p> tags along with style attributes inside <p> tags
         news_obj["content_description"] = re.sub(
             r'<p[^>]*>|</p>', '', news_obj["content_description"])

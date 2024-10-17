@@ -51,6 +51,8 @@ class EverestHeadlineScrapper(scrapy.Spider):
         # Remove <p> and </p> tags along with style attributes inside <p> tags
         news_obj["content_description"] = re.sub(
             r'<p[^>]*>|</p>', '', news_obj["content_description"])
+        news_obj["content_description"] = re.sub(
+            r'<source[^>]*>|</source>', '', news_obj["content_description"])
         # Remove extra spaces or newlines after cleaning
         news_obj["content_description"] = news_obj["content_description"].strip()
         PostNews.postnews(news_obj)

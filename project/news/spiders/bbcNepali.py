@@ -28,4 +28,5 @@ class bbcNepali_scrapper(scrapy.Spider):
         self.formattedDate = response.xpath(self.date_xpath).get()
         response.meta['category'] = Standard_Category.OTHERS
         news_obj = article_data(self, response)
+        print(news_obj)
         PostNews.postnews(news_obj)

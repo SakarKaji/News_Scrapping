@@ -10,9 +10,10 @@ class techlekh_scrapper(scrapy.Spider):
 
     def __init__(self):
         self.articleslink_xpath = '//h2[@class="entry-title"]/a/@href'
-        self.description_xpath = '//div[@class="entry-content wrap clearfix"]/p/text()'
+        self.description_xpath = '//div[@class="entry-content wrap clearfix"]/p/text()'.replace(
+            '\xa0', '')
         self.title_xpath = '//h1[@class="entry-title"]/text()'
-        self.image_xpath = '//figure[@class="wp-caption aligncenter"]/img/@src'
+        self.image_xpath = '(//figure[contains(@class,"wp-caption")]//img/@data-lazy-src)[1]'
         self.date_xpath = '//span[@class="date"]/text()[2]'
         self.article_source = 'techlekh'
         self.categories = {
@@ -39,6 +40,6 @@ class techlekh_scrapper(scrapy.Spider):
     def parse_article(self, response):
         date = response.xpath(self.date_xpath).get()
         self.formattedDate = Utils.techlekh_dateconverter(date)
-
         news_obj = article_data(self, response)
+        print(news_obj)
         PostNews.postnews(news_obj)

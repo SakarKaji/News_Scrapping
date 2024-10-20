@@ -20,7 +20,7 @@ class KathmanduPost_Scrapper(scrapy.Spider):
         self.article_links = './/a/@href'
         self.link_xpath = './/a'
         self.next_page_xpath = "//ul[contains(@class,'pagination')]/li[last()]/a/@href"
-        self.article_source = 'KathmanduPost'
+        self.article_source = 'kathmandupost'
         self.today_date = datetime.today().strftime('%Y-%m-%d')
 
     def start_requests(self):

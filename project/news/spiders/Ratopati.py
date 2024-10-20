@@ -55,5 +55,4 @@ class Ratopati_scrapper(scrapy.Spider):
         response.meta['category'] = category_name
 
         news_obj = article_data(self, response)
-        print(news_obj)
         PostNews.postnews(news_obj)

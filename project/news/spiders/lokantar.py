@@ -45,20 +45,17 @@ class lokantar_scrapper(scrapy.Spider):
     def start_requests(self):
         for category in self.categories:
             try:
-                print(f"Category :: {category}")
                 yield scrapy.Request(url=self.categories[category], callback=self.parse, meta={'category': category})
             except Exception as e:
                 print(f"Error:{e}")
                 continue
 
     def parse(self, response):
-        print(response.url)
         link1 = response.xpath(self.articleslink_xpath_main).getall()
         link2 = response.xpath(self.articleslink_xpath).getall()
         links = link1 + link2
         for link in links:
             try:
-                print(f"Link :: {response.urljoin(link)}")
                 yield scrapy.Request(url=response.urljoin(link), callback=self.parse_article, meta={'category': response.meta['category']})
 
             except Exception as e:
@@ -80,7 +77,6 @@ class lokantar_scrapper(scrapy.Spider):
                 break
 
         title = response.xpath(self.title_xpath).get()
-        print(f"Title :: {title}")
         descriptions = response.xpath(self.description_xpath).getall()
         desc = ''.join(descriptions)
         content = Utils.word_60(desc)
@@ -91,7 +87,6 @@ class lokantar_scrapper(scrapy.Spider):
 
         # Extract the text content of the <span> elements
         spans = p_element.xpath('.//span/text()')
-        print(f"Spans: {spans}")
         # Determine the date string based on the number of <span> elements
         if len(spans) == 2:
             date = spans[1]  # Take the second <span> if there are two
@@ -105,13 +100,12 @@ class lokantar_scrapper(scrapy.Spider):
 
         news = {
             'title': title.strip(),
-            'content_description': content,
+            'content_description': content.replace('\xa0', ''),
             'published_date': formattedDate,
             'image_url': img_src,
             'url': url,
-            'category_name': category,
+            'category': category,
             'is_recent': True,
-            'source_name': 'lokaantar'
+            'source': 'lokaantar'
         }
-        logging.basicConfig(level=logging.INFO)
         PostNews.postnews(news)

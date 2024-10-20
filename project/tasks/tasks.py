@@ -85,7 +85,7 @@ spiders = [
     # news24.News24Scrapper,  #someproblem
 
     onlinekhabarEnglish.OnlinekhabarEnglish_scrapper,
-    onlinemajdur.Onlinemajdur_scarpper,
+    onlinemajdur.Onlinemajdur_scrapper,
     thakhabar.Thakhabar_scrapper,
     rajdhani.rajdhanidaily_scrapper,
     merolagani.Merolagani_scrapper,

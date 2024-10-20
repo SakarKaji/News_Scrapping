@@ -12,7 +12,7 @@ class Standard_Category():
     FINANCE = "finance"
     ART = "art"
     ECONOMY = "economy"
-    OPINION = "opinion/thoughts"
+    OPINION = "opinion"
     SOCIETY = "society"
     HEALTH = "health"
     WEATHER = "weather"

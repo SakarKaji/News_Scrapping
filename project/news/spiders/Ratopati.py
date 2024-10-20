@@ -3,8 +3,6 @@ from Utils import Utils
 from Utils import PostNews
 from Utils.Constants import Standard_Category
 from news.article_object import article_data
-from news.check_scrapy_links import collect_none_values
-from Utils.Email import error_report_email
 
 
 class Ratopati_scrapper(scrapy.Spider):
@@ -20,7 +18,7 @@ class Ratopati_scrapper(scrapy.Spider):
         self.date_xpath = "//div[@class='newsInfo']/div[@class='post-hour']/span/text()"
         self.description_xpath = "//div[@class='the-content']/p/text()"
         self.image_xpath = "//figure[@class='featured-image']/img/@src"
-        self.article_source = 'ratopati'
+        self.article_source = 'ratopatinepali'
 
     def start_requests(self):
         yield scrapy.Request(url=self.articlelink_xpath, callback=self.parse)

@@ -95,13 +95,70 @@ def validate_date(date):
         return False
 
 
+def onlinemajdoor_date_conversion(cleaned_time):
+    date_string = cleaned_time
+    date_parts = date_string.split(" ")
+    nepali_day = int(date_parts[1].strip(','))
+    nepali_month = nepali_month_mapping[date_parts[0]]
+    nepali_year = int(date_parts[2])
+
+    formatted_date = f"{nepali_month:02d}/{nepali_day:02d}/{nepali_year}"
+    dateobject = nepali_datetime.datetime.strptime(formatted_date, "%m/%d/%Y")
+    english_date = dateobject.to_datetime_date()
+    formatted_date = english_date.strftime('%Y-%m-%d')
+    return str(formatted_date)
+
+
+def janaastha_conversion(date):
+    date_string = date.strip()
+    date_parts = date_string.split(" ")
+    nepali_day = int(date_parts[1].strip(','))
+    nepali_month = nepali_month_mapping[date_parts[0]]
+    nepali_year = int(date_parts[2])
+    formatted_date = f"{nepali_month:02d}/{nepali_day:02d}/{nepali_year}"
+    dateobject = nepali_datetime.datetime.strptime(formatted_date, "%m/%d/%Y")
+    english_date = dateobject.to_datetime_date()
+    english_date
+    formatted_date = english_date.strftime('%Y-%m-%d')
+    return formatted_date
+
+
+def nayapage_datetime(ndate):
+    date_string = ndate
+    date_parts = date_string.split(" ")
+    nepali_day = int(date_parts[0].strip(','))
+    nepali_month = nepali_month_mapping[date_parts[1]]
+    nepali_year = int(date_parts[2].strip(','))
+    formatted_date = f"{nepali_month:02d} {nepali_day:02d} {nepali_year}"
+    dateobject = datetime.strptime(formatted_date, "%m %d %Y")
+    formatted_date = dateobject.strftime('%Y-%m-%d')
+    return str(formatted_date)
+
+
+def khaburhub_dateconverter(nepali_date):
+    date_parts = nepali_date.split()
+    nepali_day = int(date_parts[0])
+    nepali_month = nepali_month_mapping[date_parts[1]]
+    nepali_year = int(date_parts[2].strip(','))
+    formatted_date = f"{nepali_month:02d}/{nepali_day:02d}/{nepali_year}"
+    date_object = nepali_datetime.datetime.strptime(formatted_date, "%m/%d/%Y")
+    english_date = date_object.to_datetime_date()
+    formatted_date = english_date.strftime("%Y-%m-%d")
+    return formatted_date
+
+
+def mero_lagani_conversion(cleaned_time):
+    date_obj = datetime.strptime(cleaned_time, "%b %d, %Y %I:%M %p")
+    formatted_date = date_obj.strftime("%Y-%m-%d")
+    return formatted_date
+
+
 def annapurnapost_datetime(ndate):
     date_string = ndate
     date_parts = date_string.split(" ")
     nepali_day = int(date_parts[1].strip(','))
     nepali_month = nepali_month_mapping[date_parts[0]]
     nepali_year = int(date_parts[2])
-
     formatted_date = f"{nepali_month:02d} {nepali_day:02d} {nepali_year}"
     dateobject = nepali_datetime.datetime.strptime(formatted_date, "%m %d %Y")
     english_date = dateobject.to_datetime_date()
@@ -122,13 +179,12 @@ def bbcnepali_date_conversion(cleaned_time):
     return str(formatted_date)
 
 
-def ekantipur_conversion(time):
-    date_string = time
-    date_parts = date_string.split(" ")
+def ekantipur_conversion(date_fm):
+    date_parts = date_fm.split(" ")
+    date_parts = [item for item in date_parts if item]
     nepali_day = int(date_parts[1].strip(','))
     nepali_month = nepali_month_mapping[date_parts[0]]
     nepali_year = int(date_parts[2])
-
     formatted_date = f"{nepali_month:02d}/{nepali_day:02d}/{nepali_year}"
     dateobject = nepali_datetime.datetime.strptime(formatted_date, "%m/%d/%Y")
     english_date = dateobject.to_datetime_date()
@@ -137,7 +193,6 @@ def ekantipur_conversion(time):
 
 
 def gorkhapatraonline_datetime_parser(nepali_date):
-
     date_parts = nepali_date.split()
     nepali_day = int(date_parts[0])
     nepali_month = nepali_month_mapping[date_parts[1]]
@@ -348,7 +403,6 @@ def lokaantar_conversion(date):
     nepali_day = int(date_parts[1].strip(','))
     nepali_month = nepali_month_mapping[date_parts[0]]
     nepali_year = int(date_parts[2])
-
     formatted_date = f"{nepali_month:02d}/{nepali_day:02d}/{nepali_year}"
     dateobject = nepali_datetime.datetime.strptime(formatted_date, "%m/%d/%Y")
     english_date = dateobject.to_datetime_date()
@@ -368,7 +422,8 @@ def setopati_datetime_parser(nepali_date):
     formatted_datetime = english_date.strftime("%Y-%m-%d")
     return formatted_datetime
 
-def ictsamachar(date_string:str):
+
+def ictsamachar(date_string: str):
     date_parts = date_string.split(',')
     nepali_day_month_strip = date_parts[1].strip()
     nepali_day_month_split = nepali_day_month_strip.split(' ')
@@ -376,15 +431,17 @@ def ictsamachar(date_string:str):
     nepali_month = int(nepali_month_mapping[nepali_day_month_split[1]])
     nepali_year = int(date_parts[2])
     formatted_nepali_date = f"{nepali_month:02d} {nepali_day:02d} {nepali_year}"
-    date_object = nepali_datetime.datetime.strptime(formatted_nepali_date, "%m %d %Y")
+    date_object = nepali_datetime.datetime.strptime(
+        formatted_nepali_date, "%m %d %Y")
     english_date = date_object.to_datetime_date()
     formatted_english_date = english_date.strftime("%Y-%m-%d")
     return str(formatted_english_date)
 
+
 def navbharattimes_datetime(date_str):
     '''
     Returns date in full month name format
-    
+
     Example:
     Given input: 14 Sep 2024 (str)
     Returns: September 14, 2024 (str)
@@ -403,8 +460,6 @@ def rajdhani_conversion(date):
     english_date = dateobject.to_datetime_date()
     formatted_date = english_date.strftime('%Y-%m-%d')
     return formatted_date
-
-
 
 def get_report_file_path():
     return os.path.join(os.getcwd(), 'output', f'Status-Report-{datetime.today().now().date()}.csv')

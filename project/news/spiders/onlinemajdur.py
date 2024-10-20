@@ -3,7 +3,8 @@ from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
 
-class Onlinemajdur_scarpper(scrapy.Spider):
+
+class Onlinemajdur_scrapper(scrapy.Spider):
     name = "onlinemajdur"
 
     def __init__(self):
@@ -24,7 +25,6 @@ class Onlinemajdur_scarpper(scrapy.Spider):
             Standard_Category.POLITICS: r'https://onlinemajdoor.com/?cat=8',
             Standard_Category.EDUCATION: r'https://onlinemajdoor.com/?cat=20'
         }
-        
 
     def start_requests(self):
         for category in self.categories:
@@ -35,10 +35,9 @@ class Onlinemajdur_scarpper(scrapy.Spider):
                 continue
 
     def parse(self, response):
-        links= response.xpath(self.articleslink_xpath).getall()
+        links = response.xpath(self.articleslink_xpath).getall()
         for link in links:
             yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
-
 
     def parse_article(self, response):
         url = response.url
@@ -52,13 +51,13 @@ class Onlinemajdur_scarpper(scrapy.Spider):
         formattedDate = Utils.onlinemajdoor_date_conversion(date)
 
         news = {
-            'title':title.strip(),
-            'content_description':content,
-            'published_date':formattedDate,
-            'image_url':img_src,
-            'url':url,
-            'category_name':category,
-            'is_recent':True,
-            'source_name':'onlinemajdur'
-            }
+            'title': title.strip(),
+            'content_description': content,
+            'published_date': formattedDate,
+            'image_url': img_src,
+            'url': url,
+            'category': category,
+            'is_recent': True,
+            'source': 'onlinemajdoor'
+        }
         PostNews.postnews(news)

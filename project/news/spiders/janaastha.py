@@ -3,6 +3,7 @@ from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
 
+
 class janaastha_scrapper(scrapy.Spider):
     name = "janaastha"
 
@@ -32,7 +33,6 @@ class janaastha_scrapper(scrapy.Spider):
             Standard_Category.OTHERS: r'https://www.janaaastha.com/category/note-of-descents',
             Standard_Category.ENTERTAINMENT: r'https://www.janaaastha.com/category/entertainment'
         }
-        
 
     def start_requests(self):
         print("---------Scraping janaastha-----------")
@@ -49,13 +49,12 @@ class janaastha_scrapper(scrapy.Spider):
         for link in links:
             yield scrapy.Request(url=response.urljoin(link), callback=self.parse_article, meta={'category': response.meta['category']})
 
-
     def parse_article(self, response):
         url = response.url
         category = response.meta['category']
         titlepre = response.xpath(self.title_xpath_pre).get()
         titlepost = response.xpath(self.title_xpath_post).get()
-        title = titlepre +" "+titlepost
+        title = titlepre + " "+titlepost
 
         descriptions = response.xpath(self.description_xpath).getall()
         desc = ''.join(descriptions)
@@ -64,13 +63,14 @@ class janaastha_scrapper(scrapy.Spider):
         date = response.xpath(self.date_xpath).get()
         formattedDate = Utils.janaastha_conversion(date)
         news = {
-            'title':title.strip(),
-            'content_description':content,
-            'published_date':formattedDate,
-            'image_url':img_src,
-            'url':url,
-            'category_name':category,
-            'is_recent':True,
-            'source_name':'janaastha'
-            }
+            'title': title.strip(),
+            'content_description': content.replace('\xa0', ''),
+            'published_date': formattedDate,
+            'image_url': img_src,
+            'url': url,
+            'category': category,
+            'is_recent': True,
+            'source': 'janaastha'
+        }
+        print(news)
         PostNews.postnews(news)

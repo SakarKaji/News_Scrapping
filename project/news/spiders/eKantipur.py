@@ -13,8 +13,9 @@ class EKantipur_Scrapper(scrapy.Spider):
     def __init__(self):
         self.data = []
         self.articlelink_xpath = '//ul/li[@class="nav-item "]'
-        self.title_xpath = "//div[@class='article-header']/h1/text()"
-        self.date_xpath = "//div[@class='time-author']/time/text()"
+        self.title_xpath = '//div[contains(@class,"a-inner-header")]//h1/text()'
+        self.datepath = "//div[contains(@class,'details-meta')]//span[@class='detail-date']/text()"
+        self.datepath2 = '//span[@class="published-at"]/text()'
         self.description_xpath = "//div[contains(@class,'description')]//p/text()"
         self.link_xpath = "//article[@class='normal']/div[@class='teaser offset']/h2/a/@href"
         self.image_xpath = "//div[@class='description current-news-block']/div[@class='image']/figure/img/@data-src"
@@ -72,9 +73,16 @@ class EKantipur_Scrapper(scrapy.Spider):
         }
         category_name = category_mapping[category]
         response.meta["category"] = category_name
-        
-        date = response.xpath(self.date_xpath).get()
-        self.formattedDate = Utils.ekantipur_conversion(date)
 
-        news_obj = article_data(self, response)
-        PostNews.postnews(news_obj)
+        date = response.xpath(self.datepath).get()
+
+        if date is None:
+            raw_date = response.xpath(self.datepath2).get()
+            date = raw_date.split(' ')
+            raw_date = date[2:-1]
+            date = ' '.join(raw_date)
+
+        if date:
+            self.formattedDate = Utils.ekantipur_conversion(date)
+            news_obj = article_data(self, response)
+            PostNews.postnews(news_obj)

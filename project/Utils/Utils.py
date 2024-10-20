@@ -95,6 +95,32 @@ def validate_date(date):
         return False
 
 
+def janaastha_conversion(date):
+    date_string = date.strip()
+    date_parts = date_string.split(" ")
+    nepali_day = int(date_parts[1].strip(','))
+    nepali_month = nepali_month_mapping[date_parts[0]]
+    nepali_year = int(date_parts[2])
+    formatted_date = f"{nepali_month:02d}/{nepali_day:02d}/{nepali_year}"
+    dateobject = nepali_datetime.datetime.strptime(formatted_date, "%m/%d/%Y")
+    english_date = dateobject.to_datetime_date()
+    english_date
+    formatted_date = english_date.strftime('%Y-%m-%d')
+    return formatted_date
+
+
+def nayapage_datetime(ndate):
+    date_string = ndate
+    date_parts = date_string.split(" ")
+    nepali_day = int(date_parts[0].strip(','))
+    nepali_month = nepali_month_mapping[date_parts[1]]
+    nepali_year = int(date_parts[2].strip(','))
+    formatted_date = f"{nepali_month:02d} {nepali_day:02d} {nepali_year}"
+    dateobject = datetime.strptime(formatted_date, "%m %d %Y")
+    formatted_date = dateobject.strftime('%Y-%m-%d')
+    return str(formatted_date)
+
+
 def khaburhub_dateconverter(nepali_date):
     date_parts = nepali_date.split()
     nepali_day = int(date_parts[0])
@@ -119,7 +145,6 @@ def annapurnapost_datetime(ndate):
     nepali_day = int(date_parts[1].strip(','))
     nepali_month = nepali_month_mapping[date_parts[0]]
     nepali_year = int(date_parts[2])
-
     formatted_date = f"{nepali_month:02d} {nepali_day:02d} {nepali_year}"
     dateobject = nepali_datetime.datetime.strptime(formatted_date, "%m %d %Y")
     english_date = dateobject.to_datetime_date()

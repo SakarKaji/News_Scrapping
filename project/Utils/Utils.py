@@ -95,6 +95,20 @@ def validate_date(date):
         return False
 
 
+def onlinemajdoor_date_conversion(cleaned_time):
+    date_string = cleaned_time
+    date_parts = date_string.split(" ")
+    nepali_day = int(date_parts[1].strip(','))
+    nepali_month = nepali_month_mapping[date_parts[0]]
+    nepali_year = int(date_parts[2])
+
+    formatted_date = f"{nepali_month:02d}/{nepali_day:02d}/{nepali_year}"
+    dateobject = nepali_datetime.datetime.strptime(formatted_date, "%m/%d/%Y")
+    english_date = dateobject.to_datetime_date()
+    formatted_date = english_date.strftime('%Y-%m-%d')
+    return str(formatted_date)
+
+
 def janaastha_conversion(date):
     date_string = date.strip()
     date_parts = date_string.split(" ")

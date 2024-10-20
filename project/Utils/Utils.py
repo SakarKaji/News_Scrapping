@@ -95,6 +95,18 @@ def validate_date(date):
         return False
 
 
+def khaburhub_dateconverter(nepali_date):
+    date_parts = nepali_date.split()
+    nepali_day = int(date_parts[0])
+    nepali_month = nepali_month_mapping[date_parts[1]]
+    nepali_year = int(date_parts[2].strip(','))
+    formatted_date = f"{nepali_month:02d}/{nepali_day:02d}/{nepali_year}"
+    date_object = nepali_datetime.datetime.strptime(formatted_date, "%m/%d/%Y")
+    english_date = date_object.to_datetime_date()
+    formatted_date = english_date.strftime("%Y-%m-%d")
+    return formatted_date
+
+
 def mero_lagani_conversion(cleaned_time):
     date_obj = datetime.strptime(cleaned_time, "%b %d, %Y %I:%M %p")
     formatted_date = date_obj.strftime("%Y-%m-%d")

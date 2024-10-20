@@ -12,7 +12,7 @@ class himalkhabar_scrapper(scrapy.Spider):
         self.articleslink_xpath_education = '//div[@class="news-break black-white sikshya-break"]/a/@href'
         self.description_xpath = '//div[contains(@class,"editor-box col-sm-11 col-md-11")]/p/text()'
         self.title_xpath = '//div[@class="title-names"]/span/text()'
-        self.image_xpath = '//div[@class="featured-images lens-featured full-box"]/figure/a/@href'
+        self.image_xpath = '//div[contains(@class,"featured-images lens-featured")]/figure/a/@href'
         self.date_xpath = '//span[contains(@class,"designation alt")]/text()'
         self.categories = {
             Standard_Category.OPINION: r'https://www.himalkhabar.com/bichar',
@@ -57,7 +57,7 @@ class himalkhabar_scrapper(scrapy.Spider):
         img_src = response.xpath(self.image_xpath).get()
         date = response.xpath(self.date_xpath).get()
         formattedDate = Utils.himalkhabar_conversion(date)
-        print(formattedDate)
+
 
         news = {
             'title':title.strip(),
@@ -65,8 +65,9 @@ class himalkhabar_scrapper(scrapy.Spider):
             'published_date':formattedDate,
             'image_url':img_src,
             'url':url,
-            'category_name':category,
+            'category':category,
             'is_recent':True,
-            'source_name':'himalkhabar'
+            'source':'himalkhabar'
             }
+        print(news)
         PostNews.postnews(news)

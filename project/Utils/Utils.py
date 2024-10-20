@@ -450,6 +450,16 @@ def navbharattimes_datetime(date_str):
     full_date = date_object.strftime('%B %d, %Y')
     return full_date
 
+def rajdhani_conversion(date):
+    date_parts = date.split(" ")
+    nepali_year = int(date_parts[0].strip())
+    nepali_month = nepali_month_mapping[date_parts[1].replace('\n','')]
+    nepali_day = int(date_parts[2].strip(','))
+    formatted_date = f"{nepali_month:02d}/{nepali_day:02d}/{nepali_year}"
+    dateobject = nepali_datetime.datetime.strptime(formatted_date,"%m/%d/%Y")
+    english_date = dateobject.to_datetime_date()
+    formatted_date = english_date.strftime('%Y-%m-%d')
+    return formatted_date
 
 def get_report_file_path():
     return os.path.join(os.getcwd(), 'output', f'Status-Report-{datetime.today().now().date()}.csv')

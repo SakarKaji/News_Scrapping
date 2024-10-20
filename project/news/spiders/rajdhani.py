@@ -57,8 +57,8 @@ class rajdhanidaily_scrapper(scrapy.Spider):
             'published_date':formattedDate,
             'image_url':img_src,
             'url':url,
-            'category_name':category,
+            'category':category,
             'is_recent':True,
-            'source_name':'rajdhanidaily'
+            'source':'rajdhanidaily'
             }
         PostNews.postnews(news)

@@ -3,8 +3,10 @@ from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
 
+
 class SetopatiEnglish_Scrapper(scrapy.Spider):
     name = "setopati"
+
 
     def __init__(self):
         self.articles_xpath = '//*[@id="content"]/div/section/div/div/a/@href'
@@ -24,7 +26,8 @@ class SetopatiEnglish_Scrapper(scrapy.Spider):
             Standard_Category.BUSINESS: r'https://en.setopati.com/market',
             Standard_Category.OTHERS: r'https://en.setopati.com/blog',
         }
-        
+       
+
 
     def start_requests(self):
         for category in self.categories:
@@ -34,10 +37,13 @@ class SetopatiEnglish_Scrapper(scrapy.Spider):
                 print(f"Error:{e}")
                 continue
 
+
     def parse(self, response):
         links= response.xpath(self.articles_xpath).getall()
         for link in links:
             yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
+
+
 
 
     def parse_article(self, response):
@@ -49,8 +55,9 @@ class SetopatiEnglish_Scrapper(scrapy.Spider):
         desc = ''.join(descriptions)
         content = Utils.word_60(desc)
         date = response.xpath(self.date_xpath).get()
-        formattedDate = Utils.setopati_datetime_parser(date)
+        formattedDate = Utils.setopatienglish_datetime(date)
        
+
 
         news = {
             'title':title.strip(),
@@ -58,8 +65,8 @@ class SetopatiEnglish_Scrapper(scrapy.Spider):
             'published_date':formattedDate,
             'image_url':img_src,
             'url':url,
-            'category_name':category,
+            'category':category,
             'is_recent':True,
-            'source_name':'setopatiEnglish'
+            'source':'setopatienglish'
             }
         PostNews.postnews(news)

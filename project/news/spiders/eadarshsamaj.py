@@ -5,15 +5,18 @@ from Utils import PostNews
 from news.article_object import article_data
 
 
+
+
 class eadarsha_scrapper(scrapy.Spider):
     name = "eadarsha"
+
 
     def __init__(self):
         self.articlelink_path = '//h4[@class="card-text mb-1"]/a/@href'
         self.articlelink_path_sports = '//h5[@class="mt-3 text-center"]/a/@href'
         self.description_xpath = '//div[@class="the-content"]/p/text()'
         self.title_xpath = '//h1[@class="post-title mb-2"]/text()'
-        self.image_xpath = '//div[@class="wp-caption mb-4"]/img/@src'
+        self.image_xpath = '//div[@class="wp-caption mb-4"]//img/@src'
         self.date_xpath = '//span[@class="ss-author pull-left"]/text()[2]'
         self.article_source = 'eadarsha'
         self.categories = {
@@ -31,22 +34,25 @@ class eadarsha_scrapper(scrapy.Spider):
             Standard_Category.OTHERS:[ r'https://www.eadarsha.com/nep/editorial/', r'https://www.eadarsha.com/nep/photo_gallery/']
         }
 
+
     def start_requests(self):
         for category in self.categories:
-        
+       
             try:
                 # print(f"Category: {category}")
                 if category == 'others':
                     for category in Standard_Category.OTHERS:
                         yield scrapy.Request(url=self.categories[Standard_Category.OTHERS], callback=self.parse, meta={'category': category})
                         print(f"Category:{category}")
-                        
+                       
                 else:
                  yield scrapy.Request(url=self.categories[category], callback=self.parse, meta={'category': category})
+
 
             except Exception as e:
                 print(f"Error:{e}")
                 continue
+
 
     def parse(self, response):
         if (response.meta['category'] == 'sports'):
@@ -56,8 +62,11 @@ class eadarsha_scrapper(scrapy.Spider):
         print(f"Links:{links}")
 
 
+
+
         for link in links:
             yield scrapy.Request(url=response.urljoin(link), callback=self.parse_article, meta={'category': response.meta['category']})
+
 
     def parse_article(self, response):
         date = response.xpath(self.date_xpath).get()
@@ -67,7 +76,9 @@ class eadarsha_scrapper(scrapy.Spider):
             self.formattedDate = Utils.eAdarsha_conversion(date)
         news_obj = article_data(self, response)
 
-    
+
+   
         # check news object has none key values, if exists print message else
+
 
         PostNews.postnews(news_obj)

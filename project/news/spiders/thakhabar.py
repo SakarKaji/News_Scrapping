@@ -51,7 +51,9 @@ class Thakhabar_scrapper(scrapy.Spider):
         img_src = response.xpath(self.image_xpath).get()
         date = response.xpath(self.date_xpath).get()
         formattedDate = Utils.thahakhabar_conversion(date)
-
+        unwanted_chars = ['\xa0', '\x00', '\n']
+        for char in unwanted_chars:
+            content = content.replace(char, '')
         news = {
             'title':title.strip(),
             'content_description':content,
@@ -62,7 +64,9 @@ class Thakhabar_scrapper(scrapy.Spider):
             'is_recent':True,
             'source_name':'thahakhabar'
             }
+        print(news)
         PostNews.postnews(news)
+
 if __name__ == "__main__":
     from scrapy.crawler import CrawlerProcess
     process = CrawlerProcess({

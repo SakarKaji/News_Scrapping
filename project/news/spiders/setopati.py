@@ -50,8 +50,9 @@ class Setopati_Scrapper(scrapy.Spider):
         content = Utils.word_60(desc)
         date = response.xpath(self.date_xpath).get()
         formattedDate = Utils.setopati_datetime_parser(date)
-       
-
+        unwanted_chars = ['\xa0', '\x00', '\n']
+        for char in unwanted_chars:
+            content = content.replace(char, '')
         news = {
             'title':title.strip(),
             'content_description':content,
@@ -62,4 +63,5 @@ class Setopati_Scrapper(scrapy.Spider):
             'is_recent':True,
             'source_name':'setopati'
             }
+        print(news) 
         PostNews.postnews(news)

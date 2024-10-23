@@ -7,7 +7,6 @@ from Utils import PostNews
 class SetopatiEnglish_Scrapper(scrapy.Spider):
     name = "setopati"
 
-
     def __init__(self):
         self.articles_xpath = '//*[@id="content"]/div/section/div/div/a/@href'
         self.description_xpath = "//*[@id='content']/div/div/aside/div[1]/div/div[1]/p/text()"
@@ -26,8 +25,6 @@ class SetopatiEnglish_Scrapper(scrapy.Spider):
             Standard_Category.BUSINESS: r'https://en.setopati.com/market',
             Standard_Category.OTHERS: r'https://en.setopati.com/blog',
         }
-       
-
 
     def start_requests(self):
         for category in self.categories:
@@ -37,14 +34,10 @@ class SetopatiEnglish_Scrapper(scrapy.Spider):
                 print(f"Error:{e}")
                 continue
 
-
     def parse(self, response):
-        links= response.xpath(self.articles_xpath).getall()
+        links = response.xpath(self.articles_xpath).getall()
         for link in links:
             yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
-
-
-
 
     def parse_article(self, response):
         url = response.url
@@ -56,17 +49,18 @@ class SetopatiEnglish_Scrapper(scrapy.Spider):
         content = Utils.word_60(desc)
         date = response.xpath(self.date_xpath).get()
         formattedDate = Utils.setopatienglish_datetime(date)
-       
-
-
+        unwanted_chars = ['\xa0', '\x00', '\n']
+        for char in unwanted_chars:
+            content = content.replace(char, '')
         news = {
-            'title':title.strip(),
-            'content_description':content,
-            'published_date':formattedDate,
-            'image_url':img_src,
-            'url':url,
-            'category':category,
-            'is_recent':True,
-            'source':'setopatienglish'
-            }
+            'title': title.strip(),
+            'content_description': content,
+            'published_date': formattedDate,
+            'image_url': img_src,
+            'url': url,
+            'category': category,
+            'is_recent': True,
+            'source': 'setopatienglish'
+        }
+        print(news)
         PostNews.postnews(news)

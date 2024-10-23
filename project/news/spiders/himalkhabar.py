@@ -61,7 +61,7 @@ class himalkhabar_scrapper(scrapy.Spider):
 
         news = {
             'title':title.strip(),
-            'content_description':content,
+            'content_description':content.replace('\xa0',' '),
             'published_date':formattedDate,
             'image_url':img_src,
             'url':url,

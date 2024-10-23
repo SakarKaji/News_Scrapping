@@ -41,5 +41,4 @@ class techlekh_scrapper(scrapy.Spider):
         date = response.xpath(self.date_xpath).get()
         self.formattedDate = Utils.techlekh_dateconverter(date)
         news_obj = article_data(self, response)
-        print(news_obj)
         PostNews.postnews(news_obj)

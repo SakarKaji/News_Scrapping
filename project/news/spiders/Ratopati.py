@@ -53,6 +53,7 @@ class Ratopati_scrapper(scrapy.Spider):
         category_name = 'Others' if getattr(
             Standard_Category, response.meta['category'], None) is None else response.meta['category']
         response.meta['category'] = category_name
-
+        
         news_obj = article_data(self, response)
+        print(news_obj)
         PostNews.postnews(news_obj)

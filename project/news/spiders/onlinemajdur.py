@@ -49,7 +49,9 @@ class Onlinemajdur_scrapper(scrapy.Spider):
         img_src = response.xpath(self.image_xpath).get()
         date = response.xpath(self.date_xpath).get()
         formattedDate = Utils.onlinemajdoor_date_conversion(date)
-
+        unwanted_chars = ['\xa0', '\x00', '\n']
+        for char in unwanted_chars:
+            content = content.replace(char, '')
         news = {
             'title': title.strip(),
             'content_description': content,
@@ -60,4 +62,5 @@ class Onlinemajdur_scrapper(scrapy.Spider):
             'is_recent': True,
             'source': 'onlinemajdoor'
         }
+        print(news)
         PostNews.postnews(news)

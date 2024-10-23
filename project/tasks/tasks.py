@@ -45,10 +45,17 @@ except ValueError:
 
 
 # Celery beat schedule for periodic task
+# app.conf.beat_schedule = {
+#     "task-run_scraper": {
+#         "task": "run_scraper",
+#         "schedule": crontab(minute=f"*/{CRON_INTERVAL}"),
+#     },
+# }
+
 app.conf.beat_schedule = {
     "task-run_scraper": {
         "task": "run_scraper",
-        "schedule": crontab(minute=f"*/{CRON_INTERVAL}"),
+        "schedule": crontab(minute="*/5"),  # Runs every 5 minutes
     },
 }
 

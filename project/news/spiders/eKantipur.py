@@ -18,7 +18,7 @@ class EKantipur_Scrapper(scrapy.Spider):
         self.datepath2 = '//span[@class="published-at"]/text()'
         self.description_xpath = "//div[contains(@class,'description')]//p/text()"
         self.link_xpath = "//article[@class='normal']/div[@class='teaser offset']/h2/a/@href"
-        self.image_xpath = "//div[@class='description current-news-block']/div[@class='image']/figure/img/@data-src"
+        self.image_xpath = "//div[contains(@class,'image')]/figure/img/@src"
         self.today_date = datetime.today().strftime('%Y-%m-%d')
         self.article_source = "ekantipur"
 

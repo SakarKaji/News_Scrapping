@@ -134,7 +134,6 @@ def janaastha_conversion(date):
     formatted_date = f"{nepali_month:02d}/{nepali_day:02d}/{nepali_year}"
     dateobject = nepali_datetime.datetime.strptime(formatted_date, "%m/%d/%Y")
     english_date = dateobject.to_datetime_date()
-    english_date
     formatted_date = english_date.strftime('%Y-%m-%d')
     return formatted_date
 
@@ -353,9 +352,14 @@ def everestHeadlines_conversion(date):
 
         month = nepali_month_mapping[month_str]
 
+        nepali_date = nepali_datetime.date(year, month, day)
 
-        formattedDate = f"{year:04d}-{month:02d}-{day:02d}"
-        return formattedDate
+        english_date = nepali_date.to_datetime_date()
+
+        return english_date.strftime("%Y-%m-%d")
+
+        # formattedDate = f"{year:04d}-{month:02d}-{day:02d}"
+        # return formattedDate
 
 
     except (ValueError, IndexError) as e:

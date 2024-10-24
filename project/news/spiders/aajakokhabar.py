@@ -5,6 +5,7 @@ from Utils import Utils
 from Utils import PostNews
 import time
 
+
 class aajakokhabar_scrapper(scrapy.Spider):
     name = "aajakokhabar"
 
@@ -29,7 +30,6 @@ class aajakokhabar_scrapper(scrapy.Spider):
             Standard_Category.OPINION: r'https://www.aajakokhabar.com/thoughts',
             Standard_Category.OTHERS: r'https://www.aajakokhabar.com/editorial'
         }
-        
 
     def start_requests(self):
         print("---------Scraping Aajakokhabar-----------")
@@ -42,19 +42,17 @@ class aajakokhabar_scrapper(scrapy.Spider):
 
     def parse(self, response):
         link1 = response.xpath(self.articleslink_xpath_head).getall()
-        link2= response.xpath(self.articleslink_xpath).getall()
+        link2 = response.xpath(self.articleslink_xpath).getall()
         links = link1 + link2
         for link in links:
             yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
 
-
     def parse_article(self, response):
-        time.sleep(4)
         url = response.url
         category = response.meta['category']
         title = response.xpath(self.title_xpath).get()
         descriptions = response.xpath(self.description_xpath2).getall()
-        if descriptions == None:
+        if not descriptions:
             descriptions = response.xpath(self.description_xpath).getall()
         desc = ''.join(descriptions)
         content = Utils.word_60(desc)
@@ -63,15 +61,15 @@ class aajakokhabar_scrapper(scrapy.Spider):
         formattedDate = Utils.aajakokhabar(date)
 
         news = {
-            'title':title.strip(),
-            'content_description':content.replace('\xa0', ''),
-            'published_date':formattedDate,
-            'image_url':img_src,
-            'url':url,
-            'category':category,
-            'is_recent':True,
-            'source':'aajakokhabar'
-            }
+            'title': title.strip(),
+            'content_description': content.replace('\xa0', '').strip(),
+            'published_date': formattedDate,
+            'url': url,
+            'category': category,
+            'is_recent': True,
+            'source': 'aajakokhabar'
+        }
+        if img_src:
+            news['image_url'] = img_src
+        print(news)
         PostNews.postnews(news)
-
-    

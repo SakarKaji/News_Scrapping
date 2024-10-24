@@ -23,6 +23,7 @@ nepali_month_mapping = {
     "भाद्र": 5,
     "असोज": 6,
     "आश्विन": 6,
+    "आश्वीन": 6,
     "कात्तिक": 7,
     'कार्तिक': 7,
     "मंसिर": 8,
@@ -394,10 +395,10 @@ def bizmandu_datetime(ndate):
     nepali_month = nepali_month_mapping[date_parts[1]]
     nepali_year = int(date_parts[0].strip(','))
 
-    formatted_date = f"{nepali_month:02d} {nepali_day:02d} {nepali_year}"
-    dateobject = datetime.strptime(formatted_date, "%m %d %Y")
-    formatted_date = dateobject.strftime('%Y-%m-%d')
-
+    formatted_date = f"{nepali_month:02d}/{nepali_day:02d}/{nepali_year}"
+    dateobject = nepali_datetime.datetime.strptime(formatted_date, "%m/%d/%Y")
+    english_date = dateobject.to_datetime_date()
+    formatted_date = english_date.strftime('%Y-%m-%d')
     return str(formatted_date)
 
 
@@ -489,8 +490,22 @@ def setopatienglish_datetime(date):
     # date_object = datetime.strptime(published_date_str, '%B %d, %Y') #%B is the abbrebivated month eg January → Jan February → Feb March → Mar
     date_object = datetime.strptime(date_part, '%Y-%m-%d')
     formatted_date = date_object.strftime('%Y-%m-%d')
-    print(formatted_date)
     return formatted_date
+
+
+def arthiknews_date_conversion(cleaned_time):
+    date_string = cleaned_time
+    date_parts = date_string.split(" ")
+    nepali_day = int(date_parts[0])
+    nepali_month = nepali_month_mapping[date_parts[1]]
+    nepali_year = int(date_parts[2])
+    formatted_date = f"{nepali_month:02d}/{nepali_day:02d}/{nepali_year}"
+
+    dateobject = nepali_datetime.datetime.strptime(formatted_date, "%m/%d/%Y")
+    english_date = dateobject.to_datetime_date()
+    english_date
+    formatted_date = english_date.strftime('%Y-%m-%d')
+    return str(formatted_date)
 
 
 def get_report_file_path():

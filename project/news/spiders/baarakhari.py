@@ -1,22 +1,25 @@
 
 import scrapy
+import time
 from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
 
-class barakhari_scrapper(scrapy.Spider):
-    name = "Barakhari"
+
+class baarakhari_scrapper(scrapy.Spider):
+    name = "Baarakhari"
 
     def __init__(self):
         self.articleslink_xpath_breaking = '//div[contains(@class,"breaking-template feat-template")]/a/@href'
         self.articleslink_xpath_feature = '//div[contains(@class,"featured-box-item")]/a/@href'
         self.articleslink_xpath = '//div[contains(@class,"media-item")]/a/@href'
         self.articleslink_xpath_container = '//div[contains(@class,"d-flex media")]/a/@href'
-
         self.description_xpath = '//div[@class="editor-box"]/p/text()'
         self.title_xpath = '//div[@class="title-showcase"]/span/text()'
         self.image_xpath = '//div[@class="coverimage wp-block-image"]/img/@src'
         self.date_xpath = '//span[@class="auth-box flex-grow-1 hide-author"]/span/text()'
+        self.advertisement = '//figure[@class="bigyaapan-holder"]'
+        self.cross_button = '//a[@class="close_btn"]/src'
         self.categories = {
             Standard_Category.POLITICS: r'https://baahrakhari.com/politics',
             Standard_Category.INTERNATIONAL: r'https://baahrakhari.com/Immigrants',
@@ -31,7 +34,6 @@ class barakhari_scrapper(scrapy.Spider):
             Standard_Category.OTHERS: r'https://baahrakhari.com/nation'
 
         }
-        
 
     def start_requests(self):
         print("---------Scraping BARAKHARI-----------")
@@ -43,6 +45,17 @@ class barakhari_scrapper(scrapy.Spider):
                 continue
 
     def parse(self, response):
+        # Find the figure element containing the advertisement
+        ad = response.xpath('//figure[@class="bigyaapan-holder"]')
+        if ad:
+            # Extract the anchor tag URL
+            ad_url = ad.xpath('.//a/@href').get()
+            # Log the ad URL
+            self.logger.info(f"Found ad URL: {ad_url}")
+            # "Click" or follow the ad URL by yielding a Scrapy request
+            if ad_url:
+                yield scrapy.Request(url=ad_url, callback=self.parse_ad)
+
         link1 = response.xpath(self.articleslink_xpath_breaking).getall()
         link2 = response.xpath(self.articleslink_xpath_feature).getall()
         link3 = response.xpath(self.articleslink_xpath_container).getall()
@@ -50,7 +63,6 @@ class barakhari_scrapper(scrapy.Spider):
         links = link1 + link2 + link3+link4
         for link in links:
             yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
-
 
     def parse_article(self, response):
         url = response.url
@@ -64,15 +76,14 @@ class barakhari_scrapper(scrapy.Spider):
         formattedDate = Utils.baahrakhari_conversion(date)
 
         news = {
-            'title':title.strip(),
-            'content_description':content,
-            'published_date':formattedDate,
-            'image_url':img_src,
-            'url':url,
-            'category_name':category,
-            'is_recent':True,
-            'source_name':'RisingNepal'
-            }
+            'title': title.strip(),
+            'content_description': content,
+            'published_date': formattedDate,
+            'image_url': img_src,
+            'url': url,
+            'category': category,
+            'is_recent': True,
+            'source': 'baarakhari'
+        }
+        print(news)
         PostNews.postnews(news)
-
-

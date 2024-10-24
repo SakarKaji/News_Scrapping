@@ -72,4 +72,5 @@ class nayapage_scrapper(scrapy.Spider):
             'is_recent':True,
             'source_name':'nayapage'
             }
+        print(news)
         PostNews.postnews(news)

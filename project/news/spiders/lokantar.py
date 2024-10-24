@@ -108,4 +108,5 @@ class lokantar_scrapper(scrapy.Spider):
             'is_recent': True,
             'source': 'lokaantar'
         }
+        print(news)
         PostNews.postnews(news)

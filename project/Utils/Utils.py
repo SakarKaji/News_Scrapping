@@ -224,6 +224,18 @@ def nagariknews__dateconverter(date_string):
     return formatted_datetime
 
 
+def aajakokhabar(date_string: str):
+    date_parts = date_string.split()
+    nepali_day = int(date_parts[2])
+    nepali_month = int(nepali_month_mapping[date_parts[1]])
+    nepali_year = int(date_parts[3])
+    formatted_date = f"{nepali_month:02d}/{nepali_day:02d}/{nepali_year}"
+    date_object = nepali_datetime.datetime.strptime(formatted_date, "%m/%d/%Y")
+    english_date = date_object.to_datetime_date()
+    formatted_datetime = english_date.strftime("%Y-%m-%d")
+    return str(formatted_datetime)
+
+
 def online_khabar_conversion(time):
     date = time.split()
     nepali_year = date[0]

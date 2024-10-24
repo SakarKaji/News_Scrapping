@@ -65,13 +65,13 @@ class aajakokhabar_scrapper(scrapy.Spider):
 
         news = {
             'title':title.strip(),
-            'content_description':content,
+            'content_description':content.replace('\xa0', ''),
             'published_date':formattedDate,
             'image_url':img_src,
             'url':url,
-            'category_name':category,
+            'category':category,
             'is_recent':True,
-            'source_name':'aajakokhabar'
+            'source':'aajakokhabar'
             }
         PostNews.postnews(news)
 

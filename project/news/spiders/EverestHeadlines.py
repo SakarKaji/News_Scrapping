@@ -44,7 +44,6 @@ class EverestHeadlineScrapper(scrapy.Spider):
     def parse_article(self, response):
         date = response.xpath(self.date_xpath).get()
         self.formattedDate = Utils.everestHeadlines_conversion(date)
-
         news_obj = article_data(self, response)
         news_obj["content_description"] = news_obj["content_description"].replace(
             '\xa0', '')
@@ -60,4 +59,5 @@ class EverestHeadlineScrapper(scrapy.Spider):
 
         # Remove extra spaces or newlines after cleaning
         news_obj["content_description"] = news_obj["content_description"].strip()
+        print(news_obj)
         PostNews.postnews(news_obj)

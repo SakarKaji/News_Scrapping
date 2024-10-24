@@ -28,7 +28,6 @@ class aajakokhabar_scrapper(scrapy.Spider):
             Standard_Category.POLITICS: r'https://www.aajakokhabar.com/politics',
             Standard_Category.OPINION: r'https://www.aajakokhabar.com/thoughts',
             Standard_Category.OTHERS: r'https://www.aajakokhabar.com/editorial'
-
         }
         
 

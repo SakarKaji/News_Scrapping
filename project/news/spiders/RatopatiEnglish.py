@@ -4,13 +4,13 @@ from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
 
-class EnglishRatopatiScrapper(scrapy.Spider):
 
+class EnglishRatopatiScrapper(scrapy.Spider):
     name = "Ratopati English"
 
     def __init__(self):
         self.articles_xpath = "//h3[@class]/a/@href"
-        self.description_xpath = "//div[@class='content-area']/p/text()"
+        self.description_xpath = "//div[@class='content-area']//span/text()"
         self.title_xpath = "//h1[@class='news-title']/text()"
         self.image_xpath = "//div[@class='featured-images featured-images position-relative']/img/@src"
         self.date_xpath = "//div[@class='author-img flex']/div/text()[2]"
@@ -22,7 +22,7 @@ class EnglishRatopatiScrapper(scrapy.Spider):
             Standard_Category.SOCIETY: r"https://english.ratopati.com/category/society",
             Standard_Category.BUSINESS: r"https://english.ratopati.com/category/business",
             Standard_Category.INTERNATIONAL: r"https://english.ratopati.com/category/international",
-          
+
         }
 
     def start_requests(self):
@@ -38,9 +38,7 @@ class EnglishRatopatiScrapper(scrapy.Spider):
         for link in links:
             yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
 
-
     def parse_article(self, response):
-        print("--------------------------")
         url = response.url
         category = response.meta['category']
         title = response.xpath(self.title_xpath).get()
@@ -51,17 +49,18 @@ class EnglishRatopatiScrapper(scrapy.Spider):
         date = response.xpath(self.date_xpath).get()
         formattedDate = Utils.RatopatiEnglish_conversion(date)
 
+        unwanted_chars = ['\xa0', '\x00', '\n', '\u202f', '\u200d']
+        for char in unwanted_chars:
+            content = content.replace(char, '')
         news = {
-            'title':title,
-            'content_description':content,
-            'published_date':formattedDate,
-            'image_url':img_src,
-            'url':url,
-            'category_name':category,
-            'is_recent':True,
-            'source_name':'RatopatiEnglish'
-            }
+            'title': title,
+            'content_description': content,
+            'published_date': formattedDate,
+            'image_url': img_src,
+            'url': url,
+            'category': category,
+            'is_recent': True,
+            'source': 'ratopatienglish'
+        }
+        print(news)
         PostNews.postnews(news)
-
-
-        print(f"---------------category_name: {category},---------------------")

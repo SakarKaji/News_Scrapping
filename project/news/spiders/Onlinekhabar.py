@@ -9,14 +9,15 @@ class OnlineKhabarScrapper(scrapy.Spider):
     name = "Onlinekhabar"
 
     def __init__(self):
-        # self.articles_xpath = '//div[@class="ok-news-post ok-post-ltr"]/a/@href'
-        self.articlelink_xpath = "//div[@id='content']//a/@href"
-        self.description_xpath = "//div[@class='ok18-single-post-content-wrap']/p/text()"
-        self.title_xpath = "//h1[@class='entry-title']/text()"
-        self.title_xpath2 = "//section/div/div[1]/h2/text()"
-        self.title_xpath3 = "//section[1]/div/div[2]/div[1]/h1/text()"
-        self.image_xpath = "//div[@class='post-thumbnail']//img/@src"
-        self.date_xpath = "//div[@class='ok-title-info flx']/div[2]/span/text()"
+        self.articlelink_xpath = '//section[contains(@class,"ok-bises")]//a/@href'
+        self.articlelink2_xpath = '//section[contains(@class,"ok-section-mukhya")]//a/@href'
+        self.title_xpath = '//div[@class="ok-post-title-right"]/h1/text()'
+        self.title_xpath2 = '//div[@class="single-post-heading"]/h1/text()'
+        self.title_xpath3 = '//div[@class=" post-title-wrap"]/h4/a/text()'
+        self.imagepath = '//div[@class="post-thumbnail"]/img/@src'
+        self.paragraphpath = '//div[contains(@class,"content")]//p/text()'
+        self.content = '//div[contains(@class,"content")]/p'
+        self.datepath = '//div[@class="ok-post-title-right"]/div[@class="ok-title-info flx"]/div[@class="ok-news-post-hour"]/span/text()'
         self.article_source = "onlinekhabar"
         self.categories = {
             Standard_Category.SPORTS: r"https://www.onlinekhabar.com/sports",
@@ -51,19 +52,45 @@ class OnlineKhabarScrapper(scrapy.Spider):
                 print(f"Error in {link}")
 
     def parse_article(self, response):
-        title_xpaths = [self.title_xpath, self.title_xpath2, self.title_xpath3]
-        title = None
+        try:
+            url = response.url
+            print(f"URL :: {url}")
+            title_xpaths = [self.title_xpath,
+                            self.title_xpath2,
+                            self.title_xpath3]
+            title = None
 
-        for xpath in title_xpaths:
-            extract_path = response.xpath(xpath).extract_first()
-            if extract_path:
-                title = extract_path.strip()
-            if title:
-                self.title_xpath = xpath
-                break
+            for xpath in title_xpaths:
+                extract_path = response.xpath(xpath).extract_first()
+                if extract_path:
+                    title = extract_path.strip()
+                    break
+            print(f"Title :: {title}")
 
-        date = response.xpath(self.date_xpath).get()
-        self.formattedDate = Utils.online_khabar_conversion(date)
+            image = response.xpath(self.imagepath).get()
+            paragraph = response.xpath(self.paragraphpath).getall()
+            content = ''.join(paragraph)
+            date = response.xpath(self.datepath).get()
+            category = response.meta['category']
 
-        news_obj = article_data(self, response)
-        PostNews.postnews(news_obj)
+            try:
+                published_date = Utils.online_khabar_conversion(date)
+            except:
+                published_date = Utils.nepali_date_today()
+
+            unwanted_chars = ['\xa0', '\x00', '\n', '\u202f', '\u200d']
+            for char in unwanted_chars:
+                content = content.replace(char, '')
+            news = {
+                "title": title,
+                "content_description": Utils.word_60(content),
+                "published_date": published_date,
+                "url": url,
+                "category": category,
+                "source": 'onlinekhabar'
+            }
+            if image:
+                news["image_url"] = image
+            PostNews.postnews(news)
+        except Exception as e:
+            print(f"errror received in others_news {e}")

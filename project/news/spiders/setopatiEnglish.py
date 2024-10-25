@@ -5,7 +5,7 @@ from Utils import PostNews
 
 
 class SetopatiEnglish_Scrapper(scrapy.Spider):
-    name = "setopati"
+    name = "setopatienglish"
 
     def __init__(self):
         self.articles_xpath = '//*[@id="content"]/div/section/div/div/a/@href'

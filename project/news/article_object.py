@@ -11,7 +11,7 @@ def article_data(self, response):
         descriptions = response.xpath(self.description_xpath).getall()
         desc = ''.join(descriptions)
         content = Utils.word_60(desc)
-        unwanted_chars = ['\xa0', '\x00', '\n', '\u202f','\u200d']
+        unwanted_chars = ['\xa0', '\n', '\u202f','\u200d']
         for char in unwanted_chars:
             title = title.replace(char, '')
             content = content.replace(char, '')

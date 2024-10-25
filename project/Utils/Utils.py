@@ -97,6 +97,14 @@ def validate_date(date):
         return False
 
 
+def rising_nepal(date_string):
+    # Convert to datetime object
+    date_obj = datetime.strptime(date_string.strip(), "%a, %d %B %Y")
+    # Convert to yy-mm-dd format
+    formatted_date = date_obj.strftime("%Y-%m-%d")
+    return str(formatted_date)
+
+
 def english_online_khabar_datetime(date):
     date = date.split()
     date = " ".join(date[1:4]).replace(",", "")
@@ -494,7 +502,7 @@ def thahakhabar_conversion(date):
         if 'महिना' in date:
             return None
         return formatted_date
-    
+
     date_parts = date.split()
     date_part_day = date_parts[-3].replace(",", "")
     nepali_day = int(date_part_day)

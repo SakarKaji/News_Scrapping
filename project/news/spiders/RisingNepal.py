@@ -4,15 +4,12 @@ from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
 
-class barakhari_scrapper(scrapy.Spider):
+
+class RisingNepal_scrapper(scrapy.Spider):
     name = "RisingNepal"
 
     def __init__(self):
-        self.articleslink_xpath_breakingmain = '//*[contains(@class,"container card-shadow py-4")]//h2/a/@href'
-        self.articleslink_xpath_feature = '//*[contains(@class,"blog")]//h3/a/@href'
-        self.articleslink_xpath = '//*[contains(@class,"blog")]//h3/a/@href'
-        # self.articleslink_xpath_container = '//div[contains(@class,"d-flex media")]/a/@href'
-
+        self.articleslink_xpath_feature = '//*[contains(@class,"article-category-section")]//a/@href'
         self.description_xpath = '//div[contains(@class,"blog-details")]/p//text()'
         self.title_xpath = '//div[contains(@class,"text-center")]/h1/text()'
         self.image_xpath = '//div[contains(@class,"blog-banner")]/img/@src'
@@ -28,7 +25,6 @@ class barakhari_scrapper(scrapy.Spider):
             Standard_Category.OPINION: r'https://risingnepaldaily.com/categories/opinion',
             Standard_Category.OTHERS: r'https://risingnepaldaily.com/categories/nation'
         }
-        
 
     def start_requests(self):
         print("---------Scraping RisingNepal-----------")
@@ -40,15 +36,9 @@ class barakhari_scrapper(scrapy.Spider):
                 continue
 
     def parse(self, response):
-        link1 = response.xpath(self.articleslink_xpath_breakingmain).getall()
-        link2 = response.xpath(self.articleslink_xpath_feature).getall()
-        # link3 = response.xpath(self.articleslink_xpath_container).getall()
-        link4 = response.xpath(self.articleslink_xpath).getall()
-        # links = link1 + link2 + link3 + link4
-        links = link1 + link2 + link4
+        links = response.xpath(self.articleslink_xpath_feature).getall()
         for link in links:
             yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
-
 
     def parse_article(self, response):
         url = response.url
@@ -59,20 +49,25 @@ class barakhari_scrapper(scrapy.Spider):
         content = Utils.word_60(desc)
         img_src = response.xpath(self.image_xpath).get()
         date = response.xpath(self.date_xpath).get()
-        formattedDate = Utils.lokaantar_conversion(date)
+        formattedDate = Utils.rising_nepal(date)
+        unwanted_chars = ['\xa0', '\n', '\u202f','\u200d', '\r']
+        for char in unwanted_chars:
+            title = title.replace(char, '')
+            content = content.replace(char, '')
 
         news = {
-            'title':title.strip(),
-            'content_description':content,
-            'published_date':formattedDate,
-            'image_url':img_src,
-            'url':url,
-            'category_name':category,
-            'is_recent':True,
-            'source_name':'RisingNepal'
-            }
+            'title': title.strip(),
+            'content_description': content,
+            'published_date': formattedDate,
+            'image_url': img_src,
+            'url': url,
+            'category': category,
+            'is_recent': True,
+            'source': 'risingnepal'
+        }
+        print(news)
         PostNews.postnews(news)
 
-          # //*[contains(@class,"container card-shadow py-4")]//h2/a/@href
+        # //*[contains(@class,"container card-shadow py-4")]//h2/a/@href
         # //*[contains(@class,"blog")]//h3/a/@href
         # //*[contains(@class,"feature")]//h4/a/@href

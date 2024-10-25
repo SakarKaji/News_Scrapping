@@ -73,7 +73,6 @@ class ictsamachar_scrapper(scrapy.Spider):
 
     def parse_article(self, response):
         url = response.url
-        print("here")
         if url:
             category = response.meta['category']
             title = response.xpath(self.title_xpath).get()
@@ -96,6 +95,5 @@ class ictsamachar_scrapper(scrapy.Spider):
                 'is_recent':True,
                 'source':'ictsamachar'
                 }
-            
             print(news)
             PostNews.postnews(news)

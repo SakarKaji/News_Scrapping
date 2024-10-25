@@ -57,4 +57,5 @@ class Merolagani_scrapper(scrapy.Spider):
             'is_recent': True,
             'source': 'merolagani'
         }
+        print(news)
         PostNews.postnews(news)

@@ -16,7 +16,8 @@ from news.spiders import (
     arthasarokar, arthikabiyan, aajakokhabar, himalkhabar, nayapage,
     lokantar, corporatenepal, eadarshsamaj, janaastha, khabarhub,
     bizmandu, baarakhari, setopati, bbcNepali, news24, onlinekhabarEnglish,
-    onlinemajdur, thakhabar, merolagani, ictsamachar, timesofindia
+    onlinemajdur, thakhabar, merolagani, ictsamachar, timesofindia, RisingNepal,
+    setopatiEnglish, hamrokhelkud,
 )
 from celery import Celery
 from celery.schedules import crontab
@@ -85,21 +86,23 @@ spiders = [
     rajdhani.rajdhanidaily_scrapper,
     merolagani.Merolagani_scrapper,
     ictsamachar.ictsamachar_scrapper,
+    RisingNepal.RisingNepal_scrapper,
     timesofindia.TimesOfIndia_Scrapper,
+    setopatiEnglish.SetopatiEnglish_Scrapper,
+    arthasarokar.arthasarokar_scrapper,
 ]
+# hamrokhelkud.hamrokhelkud_scrapper,
 # Myrepublica.Myrepublica_Scrapper,
 # Nagarik.NagarikScraper,
 # Annapurna.AnnapurnaScraper, ## rss feed
 # news24.News24Scrapper,  #someproblem
-# setopatiEnglish.setopatiEnglish
-# hamrokhelkud.hamrokhelkud_scrapper,
 # HimalayanTimes.HimalayanScraper, ip blocked
 # saralpatrika.saralpatrika_scrapper,   #saral patrika chalena
-# arthasarokar.arthasarokar_scrapper, #date issue
 # corporatenepal.corporatenepal_scrapper,  # not working
 # reportersnepal.reportersnepal_scrapper, # chaleko chhaina
 # nayapage.nayapage_scrapper,
 # baarakhari.baarakhari_scrapper,
+# nayapage.nayapage_scrapper,
 
 
 class UrlCrawlerScript(Process):

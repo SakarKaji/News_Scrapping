@@ -1,4 +1,5 @@
 import os
+import random
 
 from celery.app import shared_task
 from celery.app.base import Celery
@@ -45,65 +46,60 @@ except ValueError:
 
 
 # Celery beat schedule for periodic task
-# app.conf.beat_schedule = {
-#     "task-run_scraper": {
-#         "task": "run_scraper",
-#         "schedule": crontab(minute=f"*/{CRON_INTERVAL}"),
-#     },
-# }
-
 app.conf.beat_schedule = {
     "task-run_scraper": {
         "task": "run_scraper",
-        "schedule": crontab(minute="*/5"),  # Runs every 5 minutes
+        "schedule": crontab(minute=f"*/{CRON_INTERVAL}"),
     },
 }
 
+# app.conf.beat_schedule = {
+#     "task-run_scraper": {
+#         "task": "run_scraper",
+#         "schedule": crontab(minute="*/1"),  # Runs every 1 minutes
+#     },
+# }
+
 spiders = [
-    # Annapurna.AnnapurnaScraper,
-    Myrepublica.Myrepublica_Scrapper,
     eKantipur.EKantipur_Scrapper,
-    Nagarik.NagarikScraper,
     kathmanduPost.KathmanduPost_Scrapper,
     EverestHeadlines.EverestHeadlineScrapper,
     Ratopati.Ratopati_scrapper,
     Onlinekhabar.OnlineKhabarScrapper,
     gorkhapatra.GorkhaPatraOnlineScrapper,
     RatopatiEnglish.EnglishRatopatiScrapper,
-    # saralpatrika.saralpatrika_scrapper,   #saral patrika chalena
     techlekh.techlekh_scrapper,
-    # arthasarokar.arthasarokar_scrapper, #date issue
     himalkhabar.himalkhabar_scrapper,
-    nayapage.nayapage_scrapper,
-
     lokantar.lokantar_scrapper,
-    # corporatenepal.corporatenepal_scrapper,  # not working
     eadarshsamaj.eadarsha_scrapper,
     janaastha.janaastha_scrapper,
     khabarhub.khabarhub_scrapper,
-    # reportersnepal.reportersnepal_scrapper, # chaleko chhaina
     aajakokhabar.aajakokhabar_scrapper,
     arthikabiyan.arthikabiyan_scrapper,
     bizmandu.bizamandu_scrapper,
-    baarakhari.barakhari_scrapper,
     setopati.Setopati_Scrapper,
-
     bbcNepali.bbcNepali_scrapper,
-    # news24.News24Scrapper,  #someproblem
-
     onlinekhabarEnglish.OnlinekhabarEnglish_scrapper,
     onlinemajdur.Onlinemajdur_scrapper,
     thakhabar.Thakhabar_scrapper,
     rajdhani.rajdhanidaily_scrapper,
     merolagani.Merolagani_scrapper,
     ictsamachar.ictsamachar_scrapper,
-    timesofindia.TimesOfIndia_Scrapper
-
-    # setopatiEnglish.setopatiEnglish
-
+    timesofindia.TimesOfIndia_Scrapper,
 ]
+# Myrepublica.Myrepublica_Scrapper,
+# Nagarik.NagarikScraper,
+# Annapurna.AnnapurnaScraper, ## rss feed
+# news24.News24Scrapper,  #someproblem
+# setopatiEnglish.setopatiEnglish
 # hamrokhelkud.hamrokhelkud_scrapper,
 # HimalayanTimes.HimalayanScraper, ip blocked
+# saralpatrika.saralpatrika_scrapper,   #saral patrika chalena
+# arthasarokar.arthasarokar_scrapper, #date issue
+# corporatenepal.corporatenepal_scrapper,  # not working
+# reportersnepal.reportersnepal_scrapper, # chaleko chhaina
+# nayapage.nayapage_scrapper,
+# baarakhari.baarakhari_scrapper,
 
 
 class UrlCrawlerScript(Process):
@@ -122,6 +118,7 @@ class UrlCrawlerScript(Process):
 
 
 def run_spider(url=""):
+    random.shuffle(spiders)
     for spider in spiders:
         # spider = test2.MySpider
         crawler = UrlCrawlerScript(spider)
@@ -131,6 +128,7 @@ def run_spider(url=""):
 
     # if sent:
     #     Utils.delete_report_file()
+
 
 @app.task(name='run_scraper')
 def crawl():

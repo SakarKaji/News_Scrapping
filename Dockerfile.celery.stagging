@@ -25,4 +25,5 @@ COPY project /project/
 ENV PYTHONPATH="/project"
 
 # Run the Celery worker and beat processes
-CMD celery -A tasks.tasks worker -E -c 4 --loglevel=info & celery -A tasks.tasks beat --loglevel=info
+CMD celery -A tasks.tasks worker -E -c 4 --loglevel=info & \
+    celery -A tasks.tasks beat --loglevel=info

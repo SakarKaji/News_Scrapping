@@ -48,7 +48,7 @@ class arthikabiyan_scrapper(scrapy.Spider):
         img_src = response.xpath(self.image_xpath).get()
         date = response.xpath(self.date_xpath).get()
         formattedDate = Utils.arthiknews_date_conversion(date)
-        unwanted_chars = ['\xa0', '\x00', '\n', '\u202f', '\u200d']
+        unwanted_chars = ['\xa0', '\n', '\u202f', '\u200d']
         for char in unwanted_chars:
             content = content.replace(char, '')
         news = {

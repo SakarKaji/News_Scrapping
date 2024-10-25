@@ -78,7 +78,7 @@ class OnlineKhabarScrapper(scrapy.Spider):
             except:
                 published_date = Utils.nepali_date_today()
 
-            unwanted_chars = ['\xa0', '\x00', '\n', '\u202f', '\u200d']
+            unwanted_chars = ['\xa0', '\n', '\u202f', '\u200d']
             for char in unwanted_chars:
                 content = content.replace(char, '')
             news = {

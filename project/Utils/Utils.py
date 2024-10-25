@@ -347,7 +347,8 @@ def everestHeadlines_conversion(date):
 
 
 def RatopatiEnglish_conversion(date):
-    formatted_date = date.replace('\n', '')
+    fm_date = date.strip()
+    formatted_date = fm_date.replace('\n', '')
     input_date = datetime.strptime(formatted_date, "%B %d, %Y")
     output_date_string = input_date.strftime("%Y-%m-%d")
     return output_date_string

@@ -1,9 +1,9 @@
 import scrapy
+import logging
+import time
 from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
-import logging
-import time
 from lxml import html
 
 

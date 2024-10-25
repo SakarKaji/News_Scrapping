@@ -47,19 +47,19 @@ except ValueError:
 
 
 # Celery beat schedule for periodic task
-app.conf.beat_schedule = {
-    "task-run_scraper": {
-        "task": "run_scraper",
-        "schedule": crontab(minute=f"*/{CRON_INTERVAL}"),
-    },
-}
-
 # app.conf.beat_schedule = {
 #     "task-run_scraper": {
 #         "task": "run_scraper",
-#         "schedule": crontab(minute="*/1"),  # Runs every 1 minutes
+#         "schedule": crontab(minute=f"*/{CRON_INTERVAL}"),
 #     },
 # }
+
+app.conf.beat_schedule = {
+    "task-run_scraper": {
+        "task": "run_scraper",
+        "schedule": crontab(minute="*/1"),  # Runs every 1 minutes
+    },
+}
 
 spiders = [
     eKantipur.EKantipur_Scrapper,
@@ -71,7 +71,6 @@ spiders = [
     RatopatiEnglish.EnglishRatopatiScrapper,
     techlekh.techlekh_scrapper,
     himalkhabar.himalkhabar_scrapper,
-    lokantar.lokantar_scrapper,
     eadarshsamaj.eadarsha_scrapper,
     janaastha.janaastha_scrapper,
     khabarhub.khabarhub_scrapper,
@@ -90,6 +89,7 @@ spiders = [
     timesofindia.TimesOfIndia_Scrapper,
     setopatiEnglish.SetopatiEnglish_Scrapper,
     arthasarokar.arthasarokar_scrapper,
+    lokantar.lokantar_scrapper,
 ]
 # hamrokhelkud.hamrokhelkud_scrapper,
 # Myrepublica.Myrepublica_Scrapper,

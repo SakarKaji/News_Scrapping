@@ -56,8 +56,9 @@ class OnlinekhabarEnglish_scrapper(scrapy.Spider):
             'published_date':formattedDate,
             'image_url':img_src,
             'url':url,
-            'category_name':category,
+            'category':category,
             'is_recent':True,
-            'source_name':'englishonlinekhabar'
+            'source':'englishonlinekhabar'
             }
+        print(news)
         PostNews.postnews(news)

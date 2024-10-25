@@ -97,6 +97,14 @@ def validate_date(date):
         return False
 
 
+def english_online_khabar_datetime(date):
+    date = date.split()
+    date = " ".join(date[1:4]).replace(",", "")
+    date_object = datetime.strptime(date, "%B %d %Y")
+    formatted_date = date_object.strftime("%Y-%m-%d")
+    return str(formatted_date)
+
+
 def onlinemajdoor_date_conversion(cleaned_time):
     date_string = cleaned_time
     date_parts = date_string.split(" ")
@@ -466,6 +474,36 @@ def rajdhani_conversion(date):
     dateobject = nepali_datetime.datetime.strptime(formatted_date, "%m/%d/%Y")
     english_date = dateobject.to_datetime_date()
     formatted_date = english_date.strftime('%Y-%m-%d')
+    return formatted_date
+
+
+def thahakhabar_conversion(date):
+    formatted_date = None  # Initialize with a default value
+    if 'मिनेट' in date or 'घण्टा' in date or 'दिन' in date:
+        if 'मिनेट' in date or 'घण्टा' in date:
+            test_date = date  # Use the provided 'date' parameter
+            current_date = datetime.now()
+            formatted_date = current_date.strftime("%Y-%m-%d")
+
+        if 'दिन' in date:
+            date_parts = date.split()
+            passed_date = int(date_parts[0])
+            published_date = datetime.today() - timedelta(days=passed_date)
+            formatted_date = published_date.strftime("%Y-%m-%d")
+
+        if 'महिना' in date:
+            return None
+        return formatted_date
+    
+    date_parts = date.split()
+    date_part_day = date_parts[-3].replace(",", "")
+    nepali_day = int(date_part_day)
+    nepali_month = nepali_month_mapping[date_parts[-4].strip(",")]
+    nepali_year = int(date_parts[-2])
+    formatted_date = f"{nepali_month}/{nepali_day}/{nepali_year}"
+    date_object = nepali_datetime.datetime.strptime(formatted_date, "%m/%d/%Y")
+    english_date = date_object.to_datetime_date()
+    formatted_date = english_date.strftime("%Y-%m-%d")
     return formatted_date
 
 

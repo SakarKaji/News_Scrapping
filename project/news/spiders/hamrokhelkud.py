@@ -26,7 +26,6 @@ class hamrokhelkud_scrapper(scrapy.Spider):
         print("---------Scraping hamrokhelkud -----------")
         for category in self.categories:
             try:
-                print((category))
                 yield scrapy.Request(url=self.categories[category], callback=self.parse, meta={'category': category})
             except Exception as e:
                 print(f"Error:{e}")

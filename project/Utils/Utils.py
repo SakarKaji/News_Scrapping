@@ -105,6 +105,21 @@ def rising_nepal(date_string):
     return str(formatted_date)
 
 
+def ArthaSarokar_conversion(date):
+    date_parts = date.strip().split()
+    nepali_day = int(date_parts[0])
+    nepali_month = nepali_month_mapping[date_parts[1]]
+    nepali_year = int(date_parts[2].replace(',', ''))
+    formatted_date = f"{nepali_month:02d}/{nepali_day:02d}/{nepali_year}"
+
+    date_object = nepali_datetime.datetime.strptime(formatted_date, "%m/%d/%Y")
+    english_date = date_object.to_datetime_date()
+
+    formatted_datetime = english_date.strftime("%Y-%m-%d")
+
+    return formatted_datetime
+
+
 def english_online_khabar_datetime(date):
     date = date.split()
     date = " ".join(date[1:4]).replace(",", "")

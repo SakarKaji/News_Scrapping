@@ -49,7 +49,7 @@ class SetopatiEnglish_Scrapper(scrapy.Spider):
         content = Utils.word_60(desc)
         date = response.xpath(self.date_xpath).get()
         formattedDate = Utils.setopatienglish_datetime(date)
-        unwanted_chars = ['\xa0', '\n']
+        unwanted_chars = ['\xa0', '\n', '\r']
         for char in unwanted_chars:
             content = content.replace(char, '')
         news = {

@@ -5,29 +5,25 @@ from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
 
+
 class arthasarokar_scrapper(scrapy.Spider):
     name = "arthasarokar"
 
     def __init__(self):
-        self.articleslink_xpath = '//a[@class="post-thumbnail"]/@href'
+        self.articleslink_xpath = '//div[@class="site-content"]//a/@href'
         self.description_xpath = '//div[@class="entry-content"]/p/text()'
         self.title_xpath = '//h1[@class="entry-title"]/text()'
         self.image_xpath = '//div[@class="post-thumbnail"]/img/@src'
         self.date_xpath = '//p[@class="pub-date"]/text()'
         self.categories = {
             Standard_Category.INTERNATIONAL: r'https://arthasarokar.com/category/international-economy',
-
             Standard_Category.ECONOMY: r'https://arthasarokar.com/category/banking',
             Standard_Category.TRAVEL: r'https://arthasarokar.com/category/tourism',
-
             Standard_Category.ECONOMY: r'https://arthasarokar.com/category/market-affairs',
             Standard_Category.BUSINESS: r'https://arthasarokar.com/category/corporate',
-
             Standard_Category.OTHERS: r'https://arthasarokar.com/category/bhansa',
-
             Standard_Category.ECONOMY: r'https://arthasarokar.com/category/insurance'
         }
-        
 
     def start_requests(self):
         print("---------Scraping Arthasarokar-----------")
@@ -41,8 +37,8 @@ class arthasarokar_scrapper(scrapy.Spider):
     def parse(self, response):
         links = response.xpath(self.articleslink_xpath).getall()
         for link in links:
-            yield scrapy.Request(url=response.urljoin(link), callback=self.parse_article, meta={'category': response.meta['category']})
-
+            if link.endswith(".html"):
+                yield scrapy.Request(url=response.urljoin(link), callback=self.parse_article, meta={'category': response.meta['category']})
 
     def parse_article(self, response):
         url = response.url
@@ -54,15 +50,18 @@ class arthasarokar_scrapper(scrapy.Spider):
         img_src = response.xpath(self.image_xpath).get()
         date = response.xpath(self.date_xpath).get()
         formattedDate = Utils.ArthaSarokar_conversion(date)
-
+        unwanted_chars = ['\xa0', '\n', '\r']
+        for char in unwanted_chars:
+            content = content.replace(char, '')
         news = {
-            'title':title.strip(),
-            'content_description':content,
-            'published_date':formattedDate,
-            'image_url':img_src,
-            'url':url,
-            'category_name':category,
-            'is_recent':True,
-            'source_name':'arthasarokar'
-            }
-        PostNews.postnews(arthasarokar_scrapper)
+            'title': title.strip(),
+            'content_description': content,
+            'published_date': formattedDate,
+            'image_url': img_src,
+            'url': url,
+            'category': category,
+            'is_recent': True,
+            'source': 'arthasarokar'
+        }
+        print(news)
+        PostNews.postnews(news)

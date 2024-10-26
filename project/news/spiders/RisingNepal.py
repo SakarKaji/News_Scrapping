@@ -1,5 +1,6 @@
 
 import scrapy
+from datetime import datetime, timedelta
 from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
@@ -41,33 +42,35 @@ class RisingNepal_scrapper(scrapy.Spider):
             yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
 
     def parse_article(self, response):
-        url = response.url
-        category = response.meta['category']
-        title = response.xpath(self.title_xpath).get()
-        descriptions = response.xpath(self.description_xpath).getall()
-        desc = ''.join(descriptions)
-        content = Utils.word_60(desc)
-        img_src = response.xpath(self.image_xpath).get()
         date = response.xpath(self.date_xpath).get()
         formattedDate = Utils.rising_nepal(date)
-        unwanted_chars = ['\xa0', '\n', '\u202f','\u200d', '\r']
-        for char in unwanted_chars:
-            title = title.replace(char, '')
-            content = content.replace(char, '')
+        five_days_ago = datetime.now() - timedelta(days=5)
+        if formattedDate and (datetime.strptime(formattedDate, "%Y-%m-%d") >= five_days_ago):
+            url = response.url
+            category = response.meta['category']
+            title = response.xpath(self.title_xpath).get()
+            descriptions = response.xpath(self.description_xpath).getall()
+            desc = ''.join(descriptions)
+            content = Utils.word_60(desc)
+            img_src = response.xpath(self.image_xpath).get()
+            unwanted_chars = ['\xa0', '\n', '\u202f', '\u200d', '\r']
+            for char in unwanted_chars:
+                title = title.replace(char, '')
+                content = content.replace(char, '')
 
-        news = {
-            'title': title.strip(),
-            'content_description': content,
-            'published_date': formattedDate,
-            'image_url': img_src,
-            'url': url,
-            'category': category,
-            'is_recent': True,
-            'source': 'risingnepal'
-        }
-        print(news)
-        PostNews.postnews(news)
+            news = {
+                'title': title.strip(),
+                'content_description': content,
+                'published_date': formattedDate,
+                'image_url': img_src,
+                'url': url,
+                'category': category,
+                'is_recent': True,
+                'source': 'risingnepal'
+            }
+            print(news)
+            PostNews.postnews(news)
 
-        # //*[contains(@class,"container card-shadow py-4")]//h2/a/@href
-        # //*[contains(@class,"blog")]//h3/a/@href
-        # //*[contains(@class,"feature")]//h4/a/@href
+            # //*[contains(@class,"container card-shadow py-4")]//h2/a/@href
+            # //*[contains(@class,"blog")]//h3/a/@href
+            # //*[contains(@class,"feature")]//h4/a/@href

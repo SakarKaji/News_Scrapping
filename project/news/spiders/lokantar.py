@@ -1,5 +1,5 @@
 import scrapy
-import logging
+from datetime import datetime, timedelta
 import time
 from Utils.Constants import Standard_Category
 from Utils import Utils
@@ -63,50 +63,45 @@ class lokantar_scrapper(scrapy.Spider):
 
     def parse_article(self, response):
         time.sleep(5)
-        url = response.url
-        category = response.meta['category']
-        title_xpaths = [self.title_xpath]
-        title = None
-
-        for xpath in title_xpaths:
-            extract_path = response.xpath(xpath).extract_first()
-            if extract_path:
-                title = extract_path.strip()
-            if title:
-                self.title_xpath = xpath
-                break
-
-        title = response.xpath(self.title_xpath).get()
-        descriptions = response.xpath(self.description_xpath).getall()
-        desc = ''.join(descriptions)
-        content = Utils.word_60(desc)
-        img_src = response.xpath(self.image_xpath).get()
         date_string = response.xpath(self.date_xpath).get()
         # Convert the string to an lxml element
         p_element = html.fromstring(date_string)
-
         # Extract the text content of the <span> elements
         spans = p_element.xpath('.//span/text()')
         # Determine the date string based on the number of <span> elements
-        if len(spans) == 2:
-            date = spans[1]  # Take the second <span> if there are two
-        elif len(spans) == 1:
-            # Take the first <span> if there is only one
-            date = spans[0]
-        else:
-            date = None
+        date = spans[1] if len(spans) == 2 else spans[0] if len(
+            spans) == 1 else None
 
         formattedDate = Utils.lokaantar_conversion(date)
+        five_days_ago = datetime.now() - timedelta(days=5)
+        if formattedDate and (datetime.strptime(formattedDate, "%Y-%m-%d") >= five_days_ago):
+            url = response.url
+            category = response.meta['category']
+            title_xpaths = [self.title_xpath]
+            title = None
 
-        news = {
-            'title': title.strip(),
-            'content_description': content.replace('\xa0', ''),
-            'published_date': formattedDate,
-            'image_url': img_src,
-            'url': url,
-            'category': category,
-            'is_recent': True,
-            'source': 'lokaantar'
-        }
-        print(news)
-        PostNews.postnews(news)
+            for xpath in title_xpaths:
+                extract_path = response.xpath(xpath).extract_first()
+                if extract_path:
+                    title = extract_path.strip()
+                if title:
+                    self.title_xpath = xpath
+                    break
+
+            title = response.xpath(self.title_xpath).get()
+            descriptions = response.xpath(self.description_xpath).getall()
+            desc = ''.join(descriptions)
+            content = Utils.word_60(desc)
+            img_src = response.xpath(self.image_xpath).get()
+            news = {
+                'title': title.strip(),
+                'content_description': content.replace('\xa0', ''),
+                'published_date': formattedDate,
+                'image_url': img_src,
+                'url': url,
+                'category': category,
+                'is_recent': True,
+                'source': 'lokaantar'
+            }
+            print(news)
+            PostNews.postnews(news)

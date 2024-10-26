@@ -1,5 +1,6 @@
 import scrapy
 import re
+from datetime import datetime, timedelta
 from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
@@ -44,20 +45,14 @@ class EverestHeadlineScrapper(scrapy.Spider):
     def parse_article(self, response):
         date = response.xpath(self.date_xpath).get()
         self.formattedDate = Utils.everestHeadlines_conversion(date)
-        news_obj = article_data(self, response)
-        news_obj["content_description"] = news_obj["content_description"].replace(
-            '\xa0', '')
-        news_obj["content_description"] = news_obj["content_description"].replace(
-            '<strong>', '')
-        news_obj["content_description"] = news_obj["content_description"].replace(
-            '</strong>', '')
-        # Remove <p> and </p> tags along with style attributes inside <p> tags
-        news_obj["content_description"] = re.sub(
-            r'<p[^>]*>|</p>', '', news_obj["content_description"])
-        news_obj["content_description"] = re.sub(
-            r'<source[^>]*>|</source>', '', news_obj["content_description"])
-
-        # Remove extra spaces or newlines after cleaning
-        news_obj["content_description"] = news_obj["content_description"].strip()
-        print(news_obj)
-        PostNews.postnews(news_obj)
+        five_days_ago = datetime.now() - timedelta(days=5)
+        if self.formattedDate and (datetime.strptime(self.formattedDate, "%Y-%m-%d") >= five_days_ago):
+            news_obj = article_data(self, response)
+            news_obj["content_description"] = re.sub(
+                r'(\xa0|<strong>|</strong>|<p[^>]*>|</p>|<source[^>]*>|</source>)', '',
+                news_obj["content_description"]
+            )
+            # Remove extra spaces or newlines after cleaning
+            news_obj["content_description"] = news_obj["content_description"].strip()
+            print(news_obj)
+            PostNews.postnews(news_obj)

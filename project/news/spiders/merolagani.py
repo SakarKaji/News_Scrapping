@@ -1,4 +1,5 @@
 import scrapy
+from datetime import datetime, timedelta
 from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
@@ -38,24 +39,26 @@ class Merolagani_scrapper(scrapy.Spider):
             yield scrapy.Request(url=response.urljoin(link), callback=self.parse_article, meta={'image': image, 'category': response.meta['category']})
 
     def parse_article(self, response):
-        url = response.url
-        img_src = response.meta['image']
-        category = response.meta['category']
-        title = response.xpath(self.title_xpath).get()
-        descriptions = response.xpath(self.description_xpath).getall()
-        desc = ''.join(descriptions)
-        content = Utils.word_60(desc)
         date = response.xpath(self.date_xpath).get()
         formattedDate = Utils.mero_lagani_conversion(date)
-        news = {
-            'title': title.strip(),
-            'content_description': content.replace('\xa0', ''),
-            'published_date': formattedDate,
-            'image_url': img_src,
-            'url': url,
-            'category': category,
-            'is_recent': True,
-            'source': 'merolagani'
-        }
-        print(news)
-        PostNews.postnews(news)
+        five_days_ago = datetime.now() - timedelta(days=5)
+        if formattedDate and (datetime.strptime(formattedDate, "%Y-%m-%d") >= five_days_ago):
+            url = response.url
+            img_src = response.meta['image']
+            category = response.meta['category']
+            title = response.xpath(self.title_xpath).get()
+            descriptions = response.xpath(self.description_xpath).getall()
+            desc = ''.join(descriptions)
+            content = Utils.word_60(desc)
+            news = {
+                'title': title.strip(),
+                'content_description': content.replace('\xa0', ''),
+                'published_date': formattedDate,
+                'image_url': img_src,
+                'url': url,
+                'category': category,
+                'is_recent': True,
+                'source': 'merolagani'
+            }
+            print(news)
+            PostNews.postnews(news)

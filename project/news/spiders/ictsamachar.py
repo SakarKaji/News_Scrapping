@@ -70,18 +70,18 @@ class ictsamachar_scrapper(scrapy.Spider):
                 yield scrapy.Request(url=base_url+link, callback=self.parse_article, meta={'category': response.meta['category']})
 
     def parse_article(self, response):
-        url = response.url
-        if url:
-            category = response.meta['category']
-            title = response.xpath(self.title_xpath).get()
-            img_src = response.xpath(self.image_xpath).get()
+        date = response.xpath(self.date_xpath).get()
+        formattedDate = Utils.ictsamachar(date)
+        five_days_ago = datetime.now() - timedelta(days=5)
+        if formattedDate and (datetime.strptime(formattedDate, "%Y-%m-%d") >= five_days_ago):
+            url = response.url
             descriptions = response.xpath(self.description_xpath).getall()
             desc = ''.join(descriptions)
             content = Utils.word_60(desc)
-            date = response.xpath(self.date_xpath).get()
-            formattedDate = Utils.ictsamachar(date)
-            five_days_ago = datetime.now() - timedelta(days=5)
-            if formattedDate and (datetime.strptime(formattedDate, "%Y-%m-%d") >= five_days_ago) and content:
+            if url and content:
+                category = response.meta['category']
+                title = response.xpath(self.title_xpath).get()
+                img_src = response.xpath(self.image_xpath).get()
                 content = content.replace('\xa0', '')
                 news = {
                     'title': title.strip(),

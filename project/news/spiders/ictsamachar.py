@@ -1,19 +1,19 @@
 import scrapy
+from datetime import datetime, timedelta
 from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
-import time
-from urllib.parse import urljoin
+
 
 class ictsamachar_scrapper(scrapy.Spider):
     name = "ictsamachar"
 
     def __init__(self):
-        self.articles_xpath = '//section[contains(@class,"news__section")]//h3//a/@href' 
-        self.description_xpath = '//div[contains(@class,"detail__description-content")]//p/text()' 
-        self.title_xpath = '//div[contains(@class,"details__title-header")][1]//h1/text()' 
-        self.image_xpath= '//div[contains(@class,"details__page")][1]//figure//img/@src' 
-        self.date_xpath = '//div[contains(@class,"details__page")][1]//p[contains(@class,"meta post__date")]//text()[1]' 
+        self.articles_xpath = '//section[contains(@class,"news__section")]//h3//a/@href'
+        self.description_xpath = '//div[contains(@class,"detail__description-content")]//p/text()'
+        self.title_xpath = '//div[contains(@class,"details__title-header")][1]//h1/text()'
+        self.image_xpath = '//div[contains(@class,"details__page")][1]//figure//img/@src'
+        self.date_xpath = '//div[contains(@class,"details__page")][1]//p[contains(@class,"meta post__date")]//text()[1]'
         self.categories = {
             Standard_Category.OTHERS: r'https://ictsamachar.com/category/information/',
             Standard_Category.OTHERS: r'https://ictsamachar.com/category/news/',
@@ -34,14 +34,14 @@ class ictsamachar_scrapper(scrapy.Spider):
             Standard_Category.OTHERS: r'https://ictsamachar.com/category/startup-innovation/',
             Standard_Category.OTHERS: r'https://ictsamachar.com/category/profile/',
             Standard_Category.OTHERS: r'https://ictsamachar.com/category/investment/',
-            Standard_Category.OTHERS:r'https://ictsamachar.com/category/feature/',
+            Standard_Category.OTHERS: r'https://ictsamachar.com/category/feature/',
             Standard_Category.OTHERS: r'https://ictsamachar.com/category/report/',
             Standard_Category.OTHERS: r'https://ictsamachar.com/category/education/',
             Standard_Category.OTHERS: r'https://ictsamachar.com/category/health/',
             Standard_Category.OTHERS: r'https://ictsamachar.com/category/agriculture/',
             Standard_Category.OTHERS: r'https://ictsamachar.com/category/tourism/',
             Standard_Category.OTHERS: r'https://ictsamachar.com/category/ai/',
-            Standard_Category.OTHERS:r'https://ictsamachar.com/category/iot/',
+            Standard_Category.OTHERS: r'https://ictsamachar.com/category/iot/',
             Standard_Category.OTHERS: r'https://ictsamachar.com/category/koshi/',
             Standard_Category.OTHERS:  r'https://ictsamachar.com/category/madhesh/',
             Standard_Category.OTHERS: r'https://ictsamachar.com/category/bagmati/',
@@ -52,7 +52,6 @@ class ictsamachar_scrapper(scrapy.Spider):
             Standard_Category.OTHERS: r'https://ictsamachar.com/category/conference/',
             Standard_Category.OTHERS: r'https://ictsamachar.com/category/seminar/'
         }
-        
 
     def start_requests(self):
         for category in self.categories:
@@ -66,10 +65,9 @@ class ictsamachar_scrapper(scrapy.Spider):
         links = response.xpath(self.articles_xpath).getall()
         base_url = "https://ictsamachar.com"
         for link in links:
-            if link and link.startswith("/"):  # Check if it's a relative URL    
-                print(base_url+link)     
+            if link and link.startswith("/"):  # Check if it's a relative URL
+                print(base_url+link)
                 yield scrapy.Request(url=base_url+link, callback=self.parse_article, meta={'category': response.meta['category']})
-
 
     def parse_article(self, response):
         url = response.url
@@ -82,18 +80,18 @@ class ictsamachar_scrapper(scrapy.Spider):
             content = Utils.word_60(desc)
             date = response.xpath(self.date_xpath).get()
             formattedDate = Utils.ictsamachar(date)
-
-            if content:
+            five_days_ago = datetime.now() - timedelta(days=5)
+            if formattedDate and (datetime.strptime(formattedDate, "%Y-%m-%d") >= five_days_ago) and content:
                 content = content.replace('\xa0', '')
-            news = {
-                'title':title.strip(),
-                'content_description': content,
-                'published_date':formattedDate,
-                'image_url':img_src,
-                'url':url,
-                'category':category,
-                'is_recent':True,
-                'source':'ictsamachar'
+                news = {
+                    'title': title.strip(),
+                    'content_description': content,
+                    'published_date': formattedDate,
+                    'image_url': img_src,
+                    'url': url,
+                    'category': category,
+                    'is_recent': True,
+                    'source': 'ictsamachar'
                 }
-            print(news)
-            PostNews.postnews(news)
+                print(news)
+                PostNews.postnews(news)

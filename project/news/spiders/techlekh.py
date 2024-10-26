@@ -1,4 +1,5 @@
 import scrapy
+from datetime import datetime, timedelta
 from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
@@ -40,6 +41,8 @@ class techlekh_scrapper(scrapy.Spider):
     def parse_article(self, response):
         date = response.xpath(self.date_xpath).get()
         self.formattedDate = Utils.techlekh_dateconverter(date)
-        news_obj = article_data(self, response)
-        print(news_obj)
-        PostNews.postnews(news_obj)
+        five_days_ago = datetime.now() - timedelta(days=5)
+        if self.formattedDate and (datetime.strptime(self.formattedDate, "%Y-%m-%d") >= five_days_ago):
+            news_obj = article_data(self, response)
+            print(news_obj)
+            PostNews.postnews(news_obj)

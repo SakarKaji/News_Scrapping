@@ -1,4 +1,5 @@
 import scrapy
+from datetime import datetime, timedelta
 from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
@@ -60,27 +61,30 @@ class khabarhub_scrapper(scrapy.Spider):
             yield scrapy.Request(url=response.urljoin(link), callback=self.parse_article, meta={'category': response.meta['category']})
 
     def parse_article(self, response):
-        url = response.url
-        category = response.meta['category']
-        title = response.xpath(self.title_xpath).get()
-        descriptions = response.xpath(self.description_xpath_2).getall()
-        if (descriptions == None or len(descriptions) == 0):
-            descriptions = response.xpath(self.description_xpath).getall()
-
-        desc = ''.join(descriptions)
-        content = Utils.word_60(desc)
-        img_src = response.xpath(self.image_xpath).get()
         date = response.xpath(self.date_xpath).get()
         formattedDate = Utils.khaburhub_dateconverter(date)
+        five_days_ago = datetime.now() - timedelta(days=5)
+        if formattedDate and (datetime.strptime(formattedDate, "%Y-%m-%d") >= five_days_ago):
+            url = response.url
+            category = response.meta['category']
+            title = response.xpath(self.title_xpath).get()
+            descriptions = response.xpath(self.description_xpath_2).getall()
+            if (not descriptions or len(descriptions) == 0):
+                descriptions = response.xpath(self.description_xpath).getall()
 
-        news = {
-            'title': title.strip(),
-            'content_description': content,
-            'published_date': formattedDate,
-            'image_url': img_src,
-            'url': url,
-            'category': category,
-            'is_recent': True,
-            'source': 'khabarhub'
-        }
-        PostNews.postnews(news)
+            desc = ''.join(descriptions)
+            content = Utils.word_60(desc)
+            img_src = response.xpath(self.image_xpath).get()
+
+            news = {
+                'title': title.strip(),
+                'content_description': content,
+                'published_date': formattedDate,
+                'image_url': img_src,
+                'url': url,
+                'category': category,
+                'is_recent': True,
+                'source': 'khabarhub'
+            }
+            print(news)
+            PostNews.postnews(news)

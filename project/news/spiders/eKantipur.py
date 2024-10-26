@@ -2,7 +2,7 @@ import scrapy
 from Utils import Utils
 from Utils import PostNews
 from Utils.Constants import Standard_Category
-from datetime import datetime
+from datetime import datetime, timedelta
 from news.article_object import article_data
 
 
@@ -26,7 +26,7 @@ class EKantipur_Scrapper(scrapy.Spider):
         for links in response.xpath(self.articlelink_xpath):
             category = links.xpath(".//a/text()").extract_first()
             category_link = links.xpath(".//a/@href").extract_first()
-            if category and category_link != None:
+            if category and category_link:
                 yield scrapy.Request(url=category_link,  callback=self.scrape_each_category, meta={"link": category_link, "category": category})
 
     def scrape_each_category(self, response):
@@ -84,5 +84,8 @@ class EKantipur_Scrapper(scrapy.Spider):
 
         if date:
             self.formattedDate = Utils.ekantipur_conversion(date)
-            news_obj = article_data(self, response)
-            PostNews.postnews(news_obj)
+            five_days_ago = datetime.now() - timedelta(days=5)
+            if self.formattedDate and (datetime.strptime(self.formattedDate, "%Y-%m-%d") >= five_days_ago):
+                news_obj = article_data(self, response)
+                print(news_obj)
+                PostNews.postnews(news_obj)

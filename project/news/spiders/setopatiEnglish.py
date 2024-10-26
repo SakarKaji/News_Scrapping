@@ -40,6 +40,9 @@ class SetopatiEnglish_Scrapper(scrapy.Spider):
             yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
 
     def parse_article(self, response):
+        date = response.xpath(self.date_xpath).get()
+        formattedDate = Utils.setopatienglish_datetime(date)
+        f8b9721c1e2d
         url = response.url
         category = response.meta['category']
         title = response.xpath(self.title_xpath).get()
@@ -47,8 +50,7 @@ class SetopatiEnglish_Scrapper(scrapy.Spider):
         descriptions = response.xpath(self.description_xpath).getall()
         desc = ''.join(descriptions)
         content = Utils.word_60(desc)
-        date = response.xpath(self.date_xpath).get()
-        formattedDate = Utils.setopatienglish_datetime(date)
+   
         unwanted_chars = ['\xa0', '\n', '\r']
         for char in unwanted_chars:
             content = content.replace(char, '')

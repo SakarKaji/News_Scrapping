@@ -1,4 +1,5 @@
 import scrapy
+from datetime import datetime, timedelta
 from Utils import Utils
 from Utils import PostNews
 from Utils.Constants import Standard_Category
@@ -49,11 +50,11 @@ class Ratopati_scrapper(scrapy.Spider):
     def scrape_each_article(self, response):
         date = response.xpath(self.date_xpath).get()
         self.formattedDate = Utils.ratopati_date_conversion(date)
-
-        category_name = 'Others' if getattr(
-            Standard_Category, response.meta['category'], None) is None else response.meta['category']
-        response.meta['category'] = category_name
-        
-        news_obj = article_data(self, response)
-        print(news_obj)
-        PostNews.postnews(news_obj)
+        five_days_ago = datetime.now() - timedelta(days=5)
+        if self.formattedDate and (datetime.strptime(self.formattedDate, "%Y-%m-%d") >= five_days_ago):
+            category_name = 'Others' if getattr(
+                Standard_Category, response.meta['category'], None) is None else response.meta['category']
+            response.meta['category'] = category_name
+            news_obj = article_data(self, response)
+            print(news_obj)
+            PostNews.postnews(news_obj)

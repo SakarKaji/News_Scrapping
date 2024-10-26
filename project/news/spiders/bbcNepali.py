@@ -1,4 +1,5 @@
 import scrapy
+from datetime import datetime, timedelta
 from Utils import PostNews
 from Utils.Constants import Standard_Category
 from news.article_object import article_data
@@ -27,6 +28,8 @@ class bbcNepali_scrapper(scrapy.Spider):
     def parse_article(self, response):
         self.formattedDate = response.xpath(self.date_xpath).get()
         response.meta['category'] = Standard_Category.OTHERS
-        news_obj = article_data(self, response)
-        print(news_obj)
-        PostNews.postnews(news_obj)
+        five_days_ago = datetime.now() - timedelta(days=5)
+        if self.formattedDate and (datetime.strptime(self.formattedDate, "%Y-%m-%d") >= five_days_ago):
+            news_obj = article_data(self, response)
+            print(news_obj)
+            PostNews.postnews(news_obj)

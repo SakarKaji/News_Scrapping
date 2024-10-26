@@ -1,7 +1,9 @@
 import scrapy
+from datetime import datetime, timedelta
 from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
+
 
 class himalkhabar_scrapper(scrapy.Spider):
     name = "himal khabar"
@@ -17,7 +19,7 @@ class himalkhabar_scrapper(scrapy.Spider):
         self.categories = {
             Standard_Category.OPINION: r'https://www.himalkhabar.com/bichar',
             Standard_Category.HEALTH: r'https://www.himalkhabar.com/health',
-        
+
             Standard_Category.BUSINESS: r'https://www.himalkhabar.com/artha',
             Standard_Category.SPORTS: r'https://www.himalkhabar.com/khel',
             Standard_Category.OTHERS: r'https://www.himalkhabar.com/remittance',
@@ -26,7 +28,6 @@ class himalkhabar_scrapper(scrapy.Spider):
             Standard_Category.POLITICS: r'https://www.himalkhabar.com/raajneeti'
 
         }
-        
 
     def start_requests(self):
         print("---------Scraping Himalkhabar-----------")
@@ -38,36 +39,35 @@ class himalkhabar_scrapper(scrapy.Spider):
                 continue
 
     def parse(self, response):
-        if(response.meta['category'] == 'opinion/thoughts'):
+        if (response.meta['category'] == 'opinion/thoughts'):
             links = response.xpath(self.articleslink_xpath_opinion).getall()
-        
+
         else:
-            links= response.xpath(self.articleslink_xpath_others).getall()
+            links = response.xpath(self.articleslink_xpath_others).getall()
         for link in links:
             yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
 
-
     def parse_article(self, response):
-        url = response.url
-        category = response.meta['category']
-        title = response.xpath(self.title_xpath).get()
-        descriptions = response.xpath(self.description_xpath).getall()
-        desc = ''.join(descriptions)
-        content = Utils.word_60(desc)
-        img_src = response.xpath(self.image_xpath).get()
         date = response.xpath(self.date_xpath).get()
         formattedDate = Utils.himalkhabar_conversion(date)
-
-
-        news = {
-            'title':title.strip(),
-            'content_description':content.replace('\xa0',' '),
-            'published_date':formattedDate,
-            'image_url':img_src,
-            'url':url,
-            'category':category,
-            'is_recent':True,
-            'source':'himalkhabar'
+        five_days_ago = datetime.now() - timedelta(days=5)
+        if formattedDate and (datetime.strptime(formattedDate, "%Y-%m-%d") >= five_days_ago):
+            url = response.url
+            category = response.meta['category']
+            title = response.xpath(self.title_xpath).get()
+            descriptions = response.xpath(self.description_xpath).getall()
+            desc = ''.join(descriptions)
+            content = Utils.word_60(desc)
+            img_src = response.xpath(self.image_xpath).get()
+            news = {
+                'title': title.strip(),
+                'content_description': content.replace('\xa0', ' '),
+                'published_date': formattedDate,
+                'image_url': img_src,
+                'url': url,
+                'category': category,
+                'is_recent': True,
+                'source': 'himalkhabar'
             }
-        print(news)
-        PostNews.postnews(news)
+            print(news)
+            PostNews.postnews(news)

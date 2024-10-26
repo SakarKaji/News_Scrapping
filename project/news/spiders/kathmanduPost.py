@@ -102,4 +102,5 @@ class KathmanduPost_Scrapper(scrapy.Spider):
             self.formattedDate = Utils.kathmandupost_conversion(date)
 
         news_obj = article_data(self, response)
+        print(news_obj)
         PostNews.postnews(news_obj)

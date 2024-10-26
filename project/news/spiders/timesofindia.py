@@ -39,45 +39,42 @@ class TimesOfIndia_Scrapper(scrapy.Spider):
             yield scrapy.Request(url=article_link, callback=self.parse_an_article)
 
     def parse_an_article(self, response):
-
         date = response.xpath(self.date_xpath).get()
         match = re.findall(self.date_extract_regex, date)
         date = match[0]
-
         # When news is not recent
         if self.is_recent(date, days=self.days_for_news_recency_check) == False:
             return None
 
         date_converted = Utils.timesofindia_datetime(date)
-
-        url = response.url
-
-        title = response.xpath(self.title_xpath).get()
-
-        img_src = response.xpath(self.image_xpath).get()
-
-        complete_description = response.xpath(self.description_xpath).getall()
-        complete_description = [des.strip() for des in complete_description]
-        complete_description = ' '.join(complete_description)
-        content_60words = Utils.word_60(complete_description)
-
         # Parse the date string into a datetime object
         date_obj = datetime.strptime(date_converted, '%B %d, %Y')
         # Format the datetime object into 'yyyy-mm-dd'
-        formatted_date = date_obj.strftime('%Y-%m-%d')
+        formattedDate = date_obj.strftime('%Y-%m-%d')
+        five_days_ago = datetime.now() - timedelta(days=5)
+        if formattedDate and (datetime.strptime(formattedDate, "%Y-%m-%d") >= five_days_ago):
+            url = response.url
+            title = response.xpath(self.title_xpath).get()
+            img_src = response.xpath(self.image_xpath).get()
+            complete_description = response.xpath(
+                self.description_xpath).getall()
+            complete_description = [des.strip()
+                                    for des in complete_description]
+            complete_description = ' '.join(complete_description)
+            content_60words = Utils.word_60(complete_description)
 
-        news = {
-            "title": title,
-            "content_description": content_60words,
-            "published_date": formatted_date,
-            "image_url": img_src,
-            "url": url,
-            "category": Standard_Category.OTHERS,
-            "is_recent": True,
-            "source": 'timesofindia'
-        }
-        print(news)
-        PostNews.postnews(news)
+            news = {
+                "title": title,
+                "content_description": content_60words,
+                "published_date": formattedDate,
+                "image_url": img_src,
+                "url": url,
+                "category": Standard_Category.OTHERS,
+                "is_recent": True,
+                "source": 'timesofindia'
+            }
+            print(news)
+            PostNews.postnews(news)
 
     def is_recent(self, date_str, days=7) -> bool:
         """

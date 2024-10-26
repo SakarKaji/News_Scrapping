@@ -1,7 +1,9 @@
 import scrapy
+from datetime import datetime, timedelta
 from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
+
 
 class OnlinekhabarEnglish_scrapper(scrapy.Spider):
     name = "englishonlinekhabar"
@@ -22,7 +24,6 @@ class OnlinekhabarEnglish_scrapper(scrapy.Spider):
             Standard_Category.OPINION: r'https://english.onlinekhabar.com/category/opinion',
             Standard_Category.ENTERTAINMENT: r'https://english.onlinekhabar.com/category/entertainment',
         }
-        
 
     def start_requests(self):
         for category in self.categories:
@@ -33,32 +34,33 @@ class OnlinekhabarEnglish_scrapper(scrapy.Spider):
                 continue
 
     def parse(self, response):
-        links= response.xpath(self.articleslink_xpath).getall()
+        links = response.xpath(self.articleslink_xpath).getall()
         for link in links:
             yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
 
-
     def parse_article(self, response):
-        url = response.url
-        category = response.meta['category']
-        title = response.xpath(self.title_xpath).get()
-       
-        descriptions = response.xpath(self.description_xpath).getall()
-        desc = ''.join(descriptions)
-        content = Utils.word_60(desc)
-        img_src = response.xpath(self.image_xpath).get()
         date = response.xpath(self.date_xpath).get()
         formattedDate = Utils.english_online_khabar_datetime(date)
+        five_days_ago = datetime.now() - timedelta(days=5)
 
-        news = {
-            'title':title.strip(),
-            'content_description':content,
-            'published_date':formattedDate,
-            'image_url':img_src,
-            'url':url,
-            'category':category,
-            'is_recent':True,
-            'source':'englishonlinekhabar'
+        if formattedDate and (datetime.strptime(formattedDate, "%Y-%m-%d") >= five_days_ago):
+            url = response.url
+            category = response.meta['category']
+            title = response.xpath(self.title_xpath).get()
+
+            descriptions = response.xpath(self.description_xpath).getall()
+            desc = ''.join(descriptions)
+            content = Utils.word_60(desc)
+            img_src = response.xpath(self.image_xpath).get()
+            news = {
+                'title': title.strip(),
+                'content_description': content,
+                'published_date': formattedDate,
+                'image_url': img_src,
+                'url': url,
+                'category': category,
+                'is_recent': True,
+                'source': 'englishonlinekhabar'
             }
-        print(news)
-        PostNews.postnews(news)
+            print(news)
+            PostNews.postnews(news)

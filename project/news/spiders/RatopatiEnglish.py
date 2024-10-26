@@ -1,5 +1,5 @@
-
 import scrapy
+from datetime import datetime, timedelta
 from Utils.Constants import Standard_Category
 from Utils import Utils
 from Utils import PostNews
@@ -39,28 +39,30 @@ class EnglishRatopatiScrapper(scrapy.Spider):
             yield scrapy.Request(url=link, callback=self.parse_article, meta={'category': response.meta['category']})
 
     def parse_article(self, response):
-        url = response.url
-        category = response.meta['category']
-        title = response.xpath(self.title_xpath).get()
-        img_src = response.xpath(self.image_xpath).get()
-        descriptions = response.xpath(self.description_xpath).getall()
-        desc = ''.join(descriptions)
-        content = Utils.word_60(desc)
         date = response.xpath(self.date_xpath).get()
         formattedDate = Utils.RatopatiEnglish_conversion(date)
+        five_days_ago = datetime.now() - timedelta(days=5)
+        if formattedDate and (datetime.strptime(formattedDate, "%Y-%m-%d") >= five_days_ago):
+            url = response.url
+            category = response.meta['category']
+            title = response.xpath(self.title_xpath).get()
+            img_src = response.xpath(self.image_xpath).get()
+            descriptions = response.xpath(self.description_xpath).getall()
+            desc = ''.join(descriptions)
+            content = Utils.word_60(desc)
 
-        unwanted_chars = ['\xa0', '\n', '\u202f', '\u200d']
-        for char in unwanted_chars:
-            content = content.replace(char, '')
-        news = {
-            'title': title,
-            'content_description': content,
-            'published_date': formattedDate,
-            'image_url': img_src,
-            'url': url,
-            'category': category,
-            'is_recent': True,
-            'source': 'ratopatienglish'
-        }
-        print(news)
-        PostNews.postnews(news)
+            unwanted_chars = ['\xa0', '\n', '\u202f', '\u200d']
+            for char in unwanted_chars:
+                content = content.replace(char, '')
+            news = {
+                'title': title,
+                'content_description': content,
+                'published_date': formattedDate,
+                'image_url': img_src,
+                'url': url,
+                'category': category,
+                'is_recent': True,
+                'source': 'ratopatienglish'
+            }
+            print(news)
+            PostNews.postnews(news)

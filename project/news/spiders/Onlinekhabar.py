@@ -1,8 +1,8 @@
 import scrapy
+from datetime import datetime, timedelta
 from Utils import Utils
 from Utils import PostNews
 from Utils.Constants import Standard_Category
-from news.article_object import article_data
 
 
 class OnlineKhabarScrapper(scrapy.Spider):
@@ -53,44 +53,41 @@ class OnlineKhabarScrapper(scrapy.Spider):
 
     def parse_article(self, response):
         try:
-            url = response.url
-            print(f"URL :: {url}")
-            title_xpaths = [self.title_xpath,
-                            self.title_xpath2,
-                            self.title_xpath3]
-            title = None
-
-            for xpath in title_xpaths:
-                extract_path = response.xpath(xpath).extract_first()
-                if extract_path:
-                    title = extract_path.strip()
-                    break
-            print(f"Title :: {title}")
-
-            image = response.xpath(self.imagepath).get()
-            paragraph = response.xpath(self.paragraphpath).getall()
-            content = ''.join(paragraph)
             date = response.xpath(self.datepath).get()
-            category = response.meta['category']
-
             try:
                 published_date = Utils.online_khabar_conversion(date)
             except:
                 published_date = Utils.nepali_date_today()
+            five_days_ago = datetime.now() - timedelta(days=5)
+            if published_date and (datetime.strptime(published_date, "%Y-%m-%d") >= five_days_ago):
+                url = response.url
+                title_xpaths = [self.title_xpath,
+                                self.title_xpath2,
+                                self.title_xpath3]
+                title = None
 
-            unwanted_chars = ['\xa0', '\n', '\u202f', '\u200d']
-            for char in unwanted_chars:
-                content = content.replace(char, '')
-            news = {
-                "title": title,
-                "content_description": Utils.word_60(content),
-                "published_date": published_date,
-                "url": url,
-                "category": category,
-                "source": 'onlinekhabar'
-            }
-            if image:
-                news["image_url"] = image
-            PostNews.postnews(news)
+                for xpath in title_xpaths:
+                    extract_path = response.xpath(xpath).extract_first()
+                    if extract_path:
+                        title = extract_path.strip()
+                        break
+                image = response.xpath(self.imagepath).get()
+                paragraph = response.xpath(self.paragraphpath).getall()
+                content = ''.join(paragraph)
+                category = response.meta['category']
+                unwanted_chars = ['\xa0', '\n', '\u202f', '\u200d']
+                for char in unwanted_chars:
+                    content = content.replace(char, '')
+                news = {
+                    "title": title,
+                    "content_description": Utils.word_60(content),
+                    "published_date": published_date,
+                    "url": url,
+                    "category": category,
+                    "source": 'onlinekhabar'
+                }
+                if image:
+                    news["image_url"] = image
+                PostNews.postnews(news)
         except Exception as e:
             print(f"errror received in others_news {e}")

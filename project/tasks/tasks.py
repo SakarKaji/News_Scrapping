@@ -47,19 +47,19 @@ except ValueError:
 
 
 # Celery beat schedule for periodic task
-# app.conf.beat_schedule = {
-#     "task-run_scraper": {
-#         "task": "run_scraper",
-#         "schedule": crontab(minute=f"*/{CRON_INTERVAL}"),
-#     },
-# }
-
 app.conf.beat_schedule = {
     "task-run_scraper": {
         "task": "run_scraper",
-        "schedule": crontab(minute="*/1"),  # Runs every 1 minutes
+        "schedule": crontab(minute=f"*/{CRON_INTERVAL}"),
     },
 }
+
+# app.conf.beat_schedule = {
+#     "task-run_scraper": {
+#         "task": "run_scraper",
+#         "schedule": crontab(minute="*/1"),  # Runs every 1 minutes
+#     },
+# }
 
 spiders = [
     eKantipur.EKantipur_Scrapper,

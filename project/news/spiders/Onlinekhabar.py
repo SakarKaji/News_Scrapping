@@ -88,6 +88,7 @@ class OnlineKhabarScrapper(scrapy.Spider):
                 }
                 if image:
                     news["image_url"] = image
+                print(news)
                 PostNews.postnews(news)
         except Exception as e:
             print(f"errror received in others_news {e}")

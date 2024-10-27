@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from news.article_object import article_data
 
 
+
 USER_AGENTS = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/89.0',
@@ -57,12 +58,12 @@ class EKantipur_Scrapper(scrapy.Spider):
             category_link = links.xpath(".//a/@href").extract_first()
             if category and category_link:
                 yield scrapy.Request(url=category_link,  callback=self.scrape_each_category,  errback=self.handle_failure, headers=header, meta={"link": category_link, "category": category})
-                
+
     def handle_failure(self, failure):
         """
         Handle failure during request.
         """
-        self.logger.error(f"Request failed: {failure.request.url}")
+        print(f"Request failed: {failure.request.url}")
 
     def scrape_each_category(self, response):
         links = []

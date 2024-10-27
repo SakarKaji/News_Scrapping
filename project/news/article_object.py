@@ -24,6 +24,7 @@ def article_data(self, response):
             'is_recent': True,
             'source': self.article_source,
         }
+        print(news)
         if img_src:
             news['image_url'] = img_src
         return news

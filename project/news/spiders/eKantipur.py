@@ -6,9 +6,35 @@ from datetime import datetime, timedelta
 from news.article_object import article_data
 
 
+USER_AGENTS = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/89.0',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15',
+    'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:90.0) Gecko/20100101 Firefox/90.0',
+]
+
+
 class EKantipur_Scrapper(scrapy.Spider):
     name = "ekantipur"
     start_urls = ["https://ekantipur.com/"]
+
+    custom_settings = {
+        'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'LOG_LEVEL': logging.DEBUG,
+        'ROBOTSTXT_OBEY': False,
+        'DOWNLOAD_DELAY': 1,
+        'AUTOTHROTTLE_ENABLED': True,
+        'AUTOTHROTTLE_START_DELAY': 1,
+        'AUTOTHROTTLE_MAX_DELAY': 60,
+        'AUTOTHROTTLE_TARGET_CONCURRENCY': 1.0,
+        'AUTOTHROTTLE_DEBUG': True,
+        'DEFAULT_REQUEST_HEADERS': {
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1'
+        }
+    }
 
     def __init__(self):
         self.data = []
@@ -23,11 +49,20 @@ class EKantipur_Scrapper(scrapy.Spider):
         self.article_source = "ekantipur"
 
     def parse(self, response):
+        headers = {
+                    'User-Agent': USER_AGENTS[3]
+                    }
         for links in response.xpath(self.articlelink_xpath):
             category = links.xpath(".//a/text()").extract_first()
             category_link = links.xpath(".//a/@href").extract_first()
             if category and category_link:
-                yield scrapy.Request(url=category_link,  callback=self.scrape_each_category, meta={"link": category_link, "category": category})
+                yield scrapy.Request(url=category_link,  callback=self.scrape_each_category,  errback=self.handle_failure, headers=header, meta={"link": category_link, "category": category})
+                
+    def handle_failure(self, failure):
+        """
+        Handle failure during request.
+        """
+        self.logger.error(f"Request failed: {failure.request.url}")
 
     def scrape_each_category(self, response):
         links = []

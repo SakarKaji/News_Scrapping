@@ -62,7 +62,7 @@ app.conf.beat_schedule = {
 # }
 
 spiders = [
-    eKantipur.EKantipur_Scrapper,
+    eKantipur.EKantipurScraper,
     # kathmanduPost.KathmanduPost_Scrapper,
     # EverestHeadlines.EverestHeadlineScrapper,
     # Ratopati.Ratopati_scrapper,

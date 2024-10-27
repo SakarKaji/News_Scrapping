@@ -4,6 +4,7 @@ from Utils import PostNews
 from Utils.Constants import Standard_Category
 from datetime import datetime, timedelta
 from news.article_object import article_data
+import logging
 
 
 
@@ -63,7 +64,7 @@ class EKantipur_Scrapper(scrapy.Spider):
         """
         Handle failure during request.
         """
-        print(f"Request failed: {failure.request.url}")
+        self.logger.error(f"Request failed: {failure.request.url}")
 
     def scrape_each_category(self, response):
         links = []

@@ -5,8 +5,7 @@ from Utils.Constants import Standard_Category
 from datetime import datetime, timedelta
 from news.article_object import article_data
 import logging
-
-
+import random
 
 USER_AGENTS = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -15,13 +14,11 @@ USER_AGENTS = [
     'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:90.0) Gecko/20100101 Firefox/90.0',
 ]
 
-
-class EKantipur_Scrapper(scrapy.Spider):
+class EKantipurScraper(scrapy.Spider):
     name = "ekantipur"
     start_urls = ["https://ekantipur.com/"]
 
     custom_settings = {
-        'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         'LOG_LEVEL': logging.DEBUG,
         'ROBOTSTXT_OBEY': False,
         'DOWNLOAD_DELAY': 1,
@@ -30,12 +27,6 @@ class EKantipur_Scrapper(scrapy.Spider):
         'AUTOTHROTTLE_MAX_DELAY': 60,
         'AUTOTHROTTLE_TARGET_CONCURRENCY': 1.0,
         'AUTOTHROTTLE_DEBUG': True,
-        'DEFAULT_REQUEST_HEADERS': {
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1'
-        }
     }
 
     def __init__(self):
@@ -50,15 +41,26 @@ class EKantipur_Scrapper(scrapy.Spider):
         self.today_date = datetime.today().strftime('%Y-%m-%d')
         self.article_source = "ekantipur"
 
+    def start_requests(self):
+        user_agent = random.choice(USER_AGENTS)
+        for url in self.start_urls:
+            yield scrapy.Request(url=url, callback=self.parse, headers={'User-Agent': user_agent})
+
     def parse(self, response):
-        headers = {
-                    'User-Agent': USER_AGENTS[3]
-                    }
-        for links in response.xpath(self.articlelink_xpath):
-            category = links.xpath(".//a/text()").extract_first()
-            category_link = links.xpath(".//a/@href").extract_first()
+        user_agent = random.choice(USER_AGENTS)
+        headers = {'User-Agent': user_agent}
+        
+        for link in response.xpath(self.articlelink_xpath):
+            category = link.xpath(".//a/text()").get()
+            category_link = link.xpath(".//a/@href").get()
             if category and category_link:
-                yield scrapy.Request(url=category_link,  callback=self.scrape_each_category,  errback=self.handle_failure, headers=header, meta={"link": category_link, "category": category})
+                yield scrapy.Request(
+                    url=category_link,
+                    callback=self.scrape_each_category,
+                    errback=self.handle_failure,
+                    headers=headers,
+                    meta={"link": category_link, "category": category}
+                )
 
     def handle_failure(self, failure):
         """
@@ -67,29 +69,30 @@ class EKantipur_Scrapper(scrapy.Spider):
         self.logger.error(f"Request failed: {failure.request.url}")
 
     def scrape_each_category(self, response):
-        links = []
         category = response.meta["category"]
-        if category == "अर्थ / वाणिज्य":
-            links = response.xpath(
-                '(//div[@class="bazar-layout"]//article//figure//a[1]/@href)').extract()
-            for link in links:
-                list = link.split('/')
-                date_list = list[4:7]
-                date = "-".join(date_list)
-                if date == self.today_date:
-                    if not link.startswith('https://'):
-                        each_link = "https://ekantipur.com" + link
-                        yield scrapy.Request(url=each_link, callback=self.scrape_each_article, meta={"link": each_link, "category": category})
-                    yield scrapy.Request(url=link, callback=self.scrape_each_article, meta={"link": link, "category": category})
+        links = []
 
-        links = response.xpath(self.link_xpath).extract()
+        if category == "अर्थ / वाणिज्य":
+            links = response.xpath('(//div[@class="bazar-layout"]//article//figure//a[1]/@href)').getall()
+            for link in links:
+                if not link.startswith('https://'):
+                    link = "https://ekantipur.com" + link
+                yield scrapy.Request(
+                    url=link,
+                    callback=self.scrape_each_article,
+                    headers={'User-Agent': random.choice(USER_AGENTS)},
+                    meta={"link": link, "category": category}
+                )
+
+        links = response.xpath(self.link_xpath).getall()
         for link in links:
-            list = link.split('/')
-            date_list = list[2:5]
-            date = "-".join(date_list)
-            if date == self.today_date:
-                each_link = "https://ekantipur.com" + link
-                yield scrapy.Request(url=each_link, callback=self.scrape_each_article, meta={"link": each_link, "category": category})
+            link = "https://ekantipur.com" + link if not link.startswith('https://') else link
+            yield scrapy.Request(
+                url=link,
+                callback=self.scrape_each_article,
+                headers={'User-Agent': random.choice(USER_AGENTS)},
+                meta={"link": link, "category": category}
+            )
 
     def scrape_each_article(self, response):
         category = response.meta["category"]
@@ -108,21 +111,14 @@ class EKantipur_Scrapper(scrapy.Spider):
             "प्रवास": Standard_Category.TRAVEL,
             "शिक्षा": Standard_Category.EDUCATION,
         }
-        category_name = category_mapping[category]
+        category_name = category_mapping.get(category, Standard_Category.OTHERS)
         response.meta["category"] = category_name
 
-        date = response.xpath(self.datepath).get()
-
-        if date is None:
-            raw_date = response.xpath(self.datepath2).get()
-            date = raw_date.split(' ')
-            raw_date = date[2:-1]
-            date = ' '.join(raw_date)
-
+        date = response.xpath(self.datepath).get() or response.xpath(self.datepath2).get()
         if date:
             self.formattedDate = Utils.ekantipur_conversion(date)
             five_days_ago = datetime.now() - timedelta(days=5)
-            if self.formattedDate and (datetime.strptime(self.formattedDate, "%Y-%m-%d") >= five_days_ago):
+            if self.formattedDate and datetime.strptime(self.formattedDate, "%Y-%m-%d") >= five_days_ago:
                 news_obj = article_data(self, response)
                 print(news_obj)
                 PostNews.postnews(news_obj)

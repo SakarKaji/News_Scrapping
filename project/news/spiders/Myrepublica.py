@@ -101,9 +101,9 @@ class Myrepublica_Scrapper(scrapy.Spider):
                 "content_description": description,
                 "image_url": image,
                 "url": response.meta['link'],
-                "category_name": category_name,
+                "category": category_name,
                 "published_date": publishdate,
                 'is_recent': True,
-                'source_name': 'myrepublica'
+                'source': 'myrepublica'
                 }
         PostNews.postnews(news)

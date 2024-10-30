@@ -46,7 +46,7 @@ except ValueError:
     raise ValueError("CRON_JOB_INTERVAL must be a valid integer.")
 
 
-# Celery beat schedule for periodic task
+# # Celery beat schedule for periodic task
 app.conf.beat_schedule = {
     "task-run_scraper": {
         "task": "run_scraper",
@@ -90,10 +90,10 @@ spiders = [
     setopatiEnglish.SetopatiEnglish_Scrapper,
     arthasarokar.arthasarokar_scrapper,
     lokantar.lokantar_scrapper,
+    Nagarik.NagarikScraper,
 ]
-# hamrokhelkud.hamrokhelkud_scrapper,
 # Myrepublica.Myrepublica_Scrapper,
-# Nagarik.NagarikScraper,
+    # hamrokhelkud.hamrokhelkud_scrapper,  needs bypass - 403 error
 # Annapurna.AnnapurnaScraper, ## rss feed
 # news24.News24Scrapper,  #someproblem
 # HimalayanTimes.HimalayanScraper, ip blocked

@@ -104,9 +104,8 @@ class NagarikScraper(scrapy.Spider):
             'published_date': formatteddate,
             'img_url': img_src,
             'url': link,
-            'category_name': category,
+            'category': category,
             'is_recent': True,
-            'source_name': 'nagariknews'
+            'source': 'nagariknews'
         }
-
         PostNews.postnews(news)

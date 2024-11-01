@@ -45,10 +45,10 @@ app.conf.broker_transport_options = {
 
 # Celery task settings
 # Acknowledge task only after successful execution
-app.conf.task_acks_late = True
-# Requeue the task if the worker is lost
-app.conf.task_reject_on_worker_lost = True
-app.conf.task_soft_time_limit = 30      # Task soft time limit in seconds
+# app.conf.task_acks_late = True
+# # Requeue the task if the worker is lost
+# app.conf.task_reject_on_worker_lost = True
+# app.conf.task_soft_time_limit = 30      # Task soft time limit in seconds
 
 # List of spiders to be scraped
 spiders = [

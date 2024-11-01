@@ -79,9 +79,13 @@ jobs:
         run: |
           ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker container rm -f news-celery-testing || true"
 
-      - name: Prune Docker Resources on Remote Server
+      - name: Remove Existing Docker Containers for Workers
         run: |
-          ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker system prune -af --volumes"
+          ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker container rm -f news-celery-testing-worker1 || true"
+          ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker container rm -f news-celery-testing-worker2 || true"
+          ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker container rm -f news-celery-testing-worker3 || true"
+          ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker container rm -f news-celery-testing-worker4 || true"
+          ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker container rm -f news-celery-testing-beat || true"
 
       - name: Run Docker Containers for Celery Workers
         run: |

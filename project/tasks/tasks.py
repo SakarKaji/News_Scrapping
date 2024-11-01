@@ -52,7 +52,7 @@ app.conf.task_soft_time_limit = 30      # Task soft time limit in seconds
 
 # List of spiders to be scraped
 spiders = [
-    'news.spiders.eKantipur.EKantipur_Scrapper',
+    'news.spiders.eKantipur.EKantipurScraper',
     'news.spiders.kathmanduPost.KathmanduPost_Scrapper',
     'news.spiders.EverestHeadlines.EverestHeadlineScrapper',
     'news.spiders.Ratopati.Ratopati_scrapper',

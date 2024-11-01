@@ -37,7 +37,7 @@ app.conf.beat_schedule = {
 
 # Redis broker transport options with timeouts
 app.conf.broker_transport_options = {
-    # 'visibility_timeout': 3600,       # Task result visibility in seconds
+    'visibility_timeout': 3600,       # Task result visibility in seconds
     'socket_timeout': 30,             # Redis socket timeout in seconds
     'socket_connect_timeout': 10,     # Redis connection timeout in seconds
     'retry_on_timeout': True          # Retry if Redis connection times out

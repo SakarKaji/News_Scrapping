@@ -83,6 +83,13 @@ jobs:
         run: |
           ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker system prune -af --volumes"
 
-      - name: Run Docker Container
+      - name: Run Docker Containers for Celery Workers
         run: |
-          ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker run --net=host -d --name=news-celery-testing --restart unless-stopped ghcr.io/quickfoxconsulting/quicksamachar_repo_django/news-celery-testing:latest"
+          ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker run --net=host -e ROLE=worker1 -d --name=news-celery-testing-worker1 --restart unless-stopped ghcr.io/quickfoxconsulting/quicksamachar_repo_django/news-celery-testing:latest"
+          ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker run --net=host -e ROLE=worker2 -d --name=news-celery-testing-worker2 --restart unless-stopped ghcr.io/quickfoxconsulting/quicksamachar_repo_django/news-celery-testing:latest"
+          ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker run --net=host -e ROLE=worker3 -d --name=news-celery-testing-worker3 --restart unless-stopped ghcr.io/quickfoxconsulting/quicksamachar_repo_django/news-celery-testing:latest"
+          ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker run --net=host -e ROLE=worker4 -d --name=news-celery-testing-worker4 --restart unless-stopped ghcr.io/quickfoxconsulting/quicksamachar_repo_django/news-celery-testing:latest"
+
+      - name: Run Docker Container for Celery Beat
+        run: |
+          ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker run --net=host -e ROLE=beat -d --name=news-celery-testing-beat --restart unless-stopped ghcr.io/quickfoxconsulting/quicksamachar_repo_django/news-celery-testing:latest"

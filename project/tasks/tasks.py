@@ -1,33 +1,15 @@
 import os
-import random
+import importlib
 
-from celery.app import shared_task
-from celery.app.base import Celery
-from scrapy.crawler import CrawlerProcess
-from scrapy import settings
-# from scrapy import log, project, signals
-from twisted.internet import reactor
-from billiard import Process
-from scrapy.utils.project import get_project_settings
-from news.spiders import (
-    EverestHeadlines, saralpatrika, Annapurna, Myrepublica,
-    eKantipur, Nagarik, kathmanduPost, Ratopati, RatopatiEnglish,
-    rajdhani, reportersnepal, Onlinekhabar, gorkhapatra, techlekh,
-    arthasarokar, arthikabiyan, aajakokhabar, himalkhabar, nayapage,
-    lokantar, corporatenepal, eadarshsamaj, janaastha, khabarhub,
-    bizmandu, baarakhari, setopati, bbcNepali, news24, onlinekhabarEnglish,
-    onlinemajdur, thakhabar, merolagani, ictsamachar, timesofindia, RisingNepal,
-    setopatiEnglish, hamrokhelkud,
-)
-from celery import Celery
+from celery import Celery, group
 from celery.schedules import crontab
 
 from scrapy.crawler import CrawlerProcess
+from scrapy import settings
 from scrapy.utils.project import get_project_settings
 
-from Utils import Email
-from Utils import Utils
-
+from billiard import Process
+from news.spiders import *
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -45,8 +27,7 @@ try:
 except ValueError:
     raise ValueError("CRON_JOB_INTERVAL must be a valid integer.")
 
-
-# # Celery beat schedule for periodic task
+# Celery beat schedule for periodic task
 app.conf.beat_schedule = {
     "task-run_scraper": {
         "task": "run_scraper",
@@ -54,46 +35,55 @@ app.conf.beat_schedule = {
     },
 }
 
-# app.conf.beat_schedule = {
-#     "task-run_scraper": {
-#         "task": "run_scraper",
-#         "schedule": crontab(minute="*/1"),  # Runs every 1 minutes
-#     },
-# }
+# Redis broker transport options with timeouts
+app.conf.broker_transport_options = {
+    # 'visibility_timeout': 3600,       # Task result visibility in seconds
+    'socket_timeout': 30,             # Redis socket timeout in seconds
+    'socket_connect_timeout': 10,     # Redis connection timeout in seconds
+    'retry_on_timeout': True          # Retry if Redis connection times out
+}
 
+# Celery task settings
+# Acknowledge task only after successful execution
+app.conf.task_acks_late = True
+# Requeue the task if the worker is lost
+app.conf.task_reject_on_worker_lost = True
+app.conf.task_soft_time_limit = 30      # Task soft time limit in seconds
+
+# List of spiders to be scraped
 spiders = [
-    eKantipur.EKantipurScraper,
-    kathmanduPost.KathmanduPost_Scrapper,
-    EverestHeadlines.EverestHeadlineScrapper,
-    Ratopati.Ratopati_scrapper,
-    Onlinekhabar.OnlineKhabarScrapper,
-    gorkhapatra.GorkhaPatraOnlineScrapper,
-    RatopatiEnglish.EnglishRatopatiScrapper,
-    techlekh.techlekh_scrapper,
-    himalkhabar.himalkhabar_scrapper,
-    eadarshsamaj.eadarsha_scrapper,
-    janaastha.janaastha_scrapper,
-    khabarhub.khabarhub_scrapper,
-    aajakokhabar.aajakokhabar_scrapper,
-    arthikabiyan.arthikabiyan_scrapper,
-    bizmandu.bizamandu_scrapper,
-    setopati.Setopati_Scrapper,
-    bbcNepali.bbcNepali_scrapper,
-    onlinekhabarEnglish.OnlinekhabarEnglish_scrapper,
-    onlinemajdur.Onlinemajdur_scrapper,
-    thakhabar.Thakhabar_scrapper,
-    rajdhani.rajdhanidaily_scrapper,
-    merolagani.Merolagani_scrapper,
-    ictsamachar.ictsamachar_scrapper,
-    RisingNepal.RisingNepal_scrapper,
-    timesofindia.TimesOfIndia_Scrapper,
-    setopatiEnglish.SetopatiEnglish_Scrapper,
-    arthasarokar.arthasarokar_scrapper,
-    lokantar.lokantar_scrapper,
-    Nagarik.NagarikScraper,
+    'news.spiders.eKantipur.EKantipur_Scrapper',
+    'news.spiders.kathmanduPost.KathmanduPost_Scrapper',
+    'news.spiders.EverestHeadlines.EverestHeadlineScrapper',
+    'news.spiders.Ratopati.Ratopati_scrapper',
+    'news.spiders.Onlinekhabar.OnlineKhabarScrapper',
+    'news.spiders.gorkhapatra.GorkhaPatraOnlineScrapper',
+    'news.spiders.RatopatiEnglish.EnglishRatopatiScrapper',
+    'news.spiders.techlekh.techlekh_scrapper',
+    'news.spiders.himalkhabar.himalkhabar_scrapper',
+    'news.spiders.eadharshsamaj.eadarsha_scrapper',
+    'news.spiders.janaastha.janaastha_scrapper',
+    'news.spiders.khabarhub.khabarhub_scrapper',
+    'news.spiders.aajakokhabar.aajakokhabar_scrapper',
+    'news.spiders.arthikabiyan.arthikabiyan_scrapper',
+    'news.spiders.bizmandu.bizamandu_scrapper',
+    'news.spiders.setopati.Setopati_Scrapper',
+    'news.spiders.bbcNepali.bbcNepali_scrapper',
+    'news.spiders.onlinekhabarEnglish.OnlinekhabarEnglish_scrapper',
+    'news.spiders.onlinemajdur.Onlinemajdur_scrapper',
+    'news.spiders.thakhabar.Thakhabar_scrapper',
+    'news.spiders.rajdhani.rajdhanidaily_scrapper',
+    'news.spiders.merolagani.Merolagani_scrapper',
+    'news.spiders.ictsamachar.ictsamachar_scrapper',
+    'news.spiders.RisingNepal.RisingNepal_scrapper',
+    'news.spiders.timesofindia.TimesOfIndia_Scrapper',
+    'news.spiders.setopatiEnglish.SetopatiEnglish_Scrapper',
+    'news.spiders.arthasarokar.arthasarokar_scrapper',
+    'news.spiders.lokantar.lokantar_scrapper',
+    'news.spiders.Nagarik.NagarikScraper',
 ]
 # Myrepublica.Myrepublica_Scrapper,
-    # hamrokhelkud.hamrokhelkud_scrapper,  needs bypass - 403 error
+# hamrokhelkud.hamrokhelkud_scrapper,  needs bypass - 403 error
 # Annapurna.AnnapurnaScraper, ## rss feed
 # news24.News24Scrapper,  #someproblem
 # HimalayanTimes.HimalayanScraper, ip blocked
@@ -107,32 +97,44 @@ spiders = [
 
 class UrlCrawlerScript(Process):
     def __init__(self, spider):
-        Process.__init__(self)
+        super().__init__()
         settings = get_project_settings()
         self.crawler = CrawlerProcess(settings)
-        # self.crawler.configure()
-        # self.crawler.signals.connect(reactor.stop, signal=signals.spider_closed)
         self.spider = spider
 
     def run(self):
         self.crawler.crawl(self.spider)
         self.crawler.start()
-        # reactor.run()
-
-
-def run_spider(url=""):
-    random.shuffle(spiders)
-    for spider in spiders:
-        # spider = test2.MySpider
-        crawler = UrlCrawlerScript(spider)
-        crawler.start()
-        crawler.join()
-    # sent = Email.Report_Email()
-
-    # if sent:
-    #     Utils.delete_report_file()
 
 
 @app.task(name='run_scraper')
 def crawl():
-    return run_spider()
+    # Create separate tasks for each spider
+    spider_tasks = [run_single_spider.s(spider_name)
+                    for spider_name in spiders]
+
+    # Group to allow distribution across multiple workers
+    job = group(spider_tasks)
+    return job.apply_async()
+
+
+@app.task
+def run_single_spider(spider_name):
+    try:
+        # Dynamically import the spider class by name
+        module_path, class_name = spider_name.rsplit('.', 1)
+        spider_module = importlib.import_module(module_path)
+        spider_class = getattr(spider_module, class_name)
+
+        # Initialize and start the crawler for the given spider class
+        crawler = UrlCrawlerScript(spider_class)
+        crawler.start()
+        crawler.join()
+    except ImportError as e:
+        raise ValueError(f"Error importing spider '{spider_name}': {str(e)}")
+    except AttributeError:
+        raise ValueError(
+            f"Spider class '{class_name}' not found in '{module_path}'")
+    except Exception as e:
+        raise RuntimeError(
+            f"An error occurred while running spider '{spider_name}': {str(e)}")

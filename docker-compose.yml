@@ -1,7 +1,45 @@
 services:
-  worker:
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  worker1:
     build: ./project
-    command: celery -A tasks.tasks worker --pool=solo -l info
+    command: celery -A tasks.tasks worker -E -c 1 --loglevel=info
+    volumes:
+      - ./project:/usr/src/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+
+  worker2:
+    build: ./project
+    command: celery -A tasks.tasks worker -E -c 1 --loglevel=info
+    volumes:
+      - ./project:/usr/src/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+
+  worker3:
+    build: ./project
+    command: celery -A tasks.tasks worker -E -c 1 --loglevel=info
+    volumes:
+      - ./project:/usr/src/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+
+  worker4:
+    build: ./project
+    command: celery -A tasks.tasks worker -E -c 1 --loglevel=info
     volumes:
       - ./project:/usr/src/app
     environment:
@@ -12,7 +50,7 @@ services:
 
   beat:
     build: ./project
-    command: celery -A tasks.tasks beat -l info
+    command: celery -A tasks.tasks beat --loglevel=info
     volumes:
       - ./project:/usr/src/app
     environment:
@@ -20,6 +58,3 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - redis
-
-  redis:
-    image: redis:7

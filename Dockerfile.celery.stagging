@@ -24,6 +24,14 @@ COPY project /project/
 # Set the PYTHONPATH to ensure the 'project' module is discoverable
 ENV PYTHONPATH="/project"
 
-# Run the Celery worker and beat processes
-CMD celery -A tasks.tasks worker -E -c 4 --loglevel=info & \
-    celery -A tasks.tasks beat --loglevel=info
+# Define the role of the container (either as a worker or beat)
+ARG ROLE
+ENV ROLE $ROLE
+
+# Define the CMD to check the ROLE and run the appropriate Celery command
+CMD ["sh", "-c", "\
+    if [ \"$ROLE\" = 'beat' ]; then \
+    celery -A tasks.tasks beat --loglevel=info; \
+    else \
+    celery -A tasks.tasks worker -E -c 1 --loglevel=info; \
+    fi"]

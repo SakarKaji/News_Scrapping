@@ -85,6 +85,7 @@ jobs:
           ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker container rm -f news-celery-testing-worker2 || true"
           ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker container rm -f news-celery-testing-worker3 || true"
           ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker container rm -f news-celery-testing-worker4 || true"
+          ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker container rm -f news-celery-testing-worker5 || true"
           ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker container rm -f news-celery-testing-beat || true"
 
       - name: Prune Docker Resources on Remote Server
@@ -102,6 +103,7 @@ jobs:
           ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker run --net=host -e ROLE=worker2 -d --name=news-celery-testing-worker2 --restart unless-stopped ghcr.io/quickfoxconsulting/quicksamachar_repo_django/news-celery-testing:latest"
           ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker run --net=host -e ROLE=worker3 -d --name=news-celery-testing-worker3 --restart unless-stopped ghcr.io/quickfoxconsulting/quicksamachar_repo_django/news-celery-testing:latest"
           ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker run --net=host -e ROLE=worker4 -d --name=news-celery-testing-worker4 --restart unless-stopped ghcr.io/quickfoxconsulting/quicksamachar_repo_django/news-celery-testing:latest"
+          ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker run --net=host -e ROLE=worker5 -d --name=news-celery-testing-worker5 --restart unless-stopped ghcr.io/quickfoxconsulting/quicksamachar_repo_django/news-celery-testing:latest"
 
       - name: Run Docker Container for Celery Beat
         run: |

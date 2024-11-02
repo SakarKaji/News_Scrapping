@@ -87,6 +87,15 @@ jobs:
           ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker container rm -f news-celery-testing-worker4 || true"
           ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker container rm -f news-celery-testing-beat || true"
 
+      - name: Prune Docker Resources on Remote Server
+        run: |
+          ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "
+            if ! pgrep -f 'docker system prune' > /dev/null; then
+              sudo docker system prune -af --volumes
+            else
+              echo 'Docker prune is already running.'
+            fi
+          "
       - name: Run Docker Containers for Celery Workers
         run: |
           ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ vars.TEST_HOST }} "sudo docker run --net=host -e ROLE=worker1 -d --name=news-celery-testing-worker1 --restart unless-stopped ghcr.io/quickfoxconsulting/quicksamachar_repo_django/news-celery-testing:latest"

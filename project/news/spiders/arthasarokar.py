@@ -21,6 +21,7 @@ class arthasarokar_scrapper(scrapy.Spider):
             Standard_Category.ECONOMY: r'https://arthasarokar.com/category/market-affairs',
             Standard_Category.BUSINESS: r'https://arthasarokar.com/category/corporate',
             Standard_Category.OTHERS: r'https://arthasarokar.com/category/bhansa',
+            Standard_Category.OTHERS: r'https://arthasarokar.com',
             Standard_Category.ECONOMY: r'https://arthasarokar.com/category/insurance'
         }
 
@@ -57,7 +58,7 @@ class arthasarokar_scrapper(scrapy.Spider):
                 content = content.replace(char, '')
             news = {
                 'title': title.strip(),
-                'content_description': content,
+                'content_description': content.strip(),
                 'published_date': formattedDate,
                 'image_url': img_src,
                 'url': url,

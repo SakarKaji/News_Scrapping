@@ -106,4 +106,5 @@ class Myrepublica_Scrapper(scrapy.Spider):
                 'is_recent': True,
                 'source': 'myrepublica'
                 }
+        print(news)
         PostNews.postnews(news)

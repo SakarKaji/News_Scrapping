@@ -68,7 +68,8 @@ class AnnapurnaScraper(scrapy.Spider):
     def parse(self, response):
         articles = response.xpath(self.articlelink_xpath)
         for article in articles.xpath(self.article_xpath):
-            image_link = article.xpath(self.image_xpath).get().strip()
+            # image_link = article.xpath(self.image_xpath).get().strip()
+            image_link = article.xpath(self.image_xpath)
             title = article.xpath(self.title_xpath).get().strip()
             get_link = article.xpath(self.article_link_xpath).get()
             link = f"https://www.annapurnapost.com{get_link}"
@@ -91,14 +92,14 @@ class AnnapurnaScraper(scrapy.Spider):
         published_date = Utils.annapurnapost_datetime(date)
 
         news = {
-            'title': title,
+            'title': title.replace('\xa0', ''),
             'content_description': content,
             'published_date': published_date,
             'image_url': img_src,
             'url': link,
-            'category_name': category,
+            'category': category,
             'is_recent': True,
-            'source_name': 'annapurnapost'
+            'source': 'annapurnapost'
         }
-
+        print(news)
         PostNews.postnews(news)
